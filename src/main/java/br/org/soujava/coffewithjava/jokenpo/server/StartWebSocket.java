@@ -1,4 +1,4 @@
-package br.org.soujava;
+package br.org.soujava.coffewithjava.jokenpo.server;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.websocket.EncodeException;
