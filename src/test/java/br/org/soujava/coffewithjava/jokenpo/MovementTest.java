@@ -1,6 +1,5 @@
 package br.org.soujava.coffewithjava.jokenpo;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -19,6 +18,7 @@ class MovementTest {
                 arguments(Movement.PAPER,Movement.ROCK)
         );
     }
+
     @ParameterizedTest(name = "{0} should beats {1}")
     @MethodSource("validMovements")
     void testBeats(Movement movementA, Movement movementB){

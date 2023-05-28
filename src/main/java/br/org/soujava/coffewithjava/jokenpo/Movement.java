@@ -7,7 +7,11 @@ public enum Movement {
     SCISSORS;
 
     public boolean beats(Movement other) {
-        // TODO implementar lógica do jogo
-        return false;
+        return switch (this){
+            case ROCK -> SCISSORS.equals(other);
+            case SCISSORS -> PAPER.equals(other);
+            case PAPER -> ROCK.equals(other);
+        };
     }
+
 }
