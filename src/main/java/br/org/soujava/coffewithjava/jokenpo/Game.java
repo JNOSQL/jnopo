@@ -1,66 +1,68 @@
 package br.org.soujava.coffewithjava.jokenpo;
 
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
+
 
 public class Game {
 
-    private Queue<Player> waitingRoom = new LinkedList<>();
-    private Map<Player, String> gamesByPlayer = new HashMap<>();
-    private Map<String, Set<Player>> playersByGame = new HashMap<>();
-    private Map<String, GameState> games = new HashMap<>();
+    private final Queue<Player> waitingRoom = new LinkedList<>();
+    private final Map<Player, String> gamesByPlayer = new HashMap<>();
+    private final Map<String, Set<Player>> playersByGame = new HashMap<>();
+    private final Map<String, GameState> games = new HashMap<>();
 
 
     public GameState newGame(Player player) {
         synchronized (this) {
             var playerWaiting = waitingRoom.poll();
-            if (playerWaiting == null || Objects.equals(player, playerWaiting)) {
-                var gameId = gamesByPlayer.computeIfAbsent(player, k -> UUID.randomUUID().toString());
-                playersByGame.computeIfAbsent(gameId, k -> new LinkedHashSet<>()).add(player);
+            if (isNull(playerWaiting) || player.equals(playerWaiting)) {
+                var gameId = getGameId(player);
+                getPlayersOfGame(gameId).add(player);
                 waitingRoom.offer(player);
                 return new WaitingPlayers(gameId, player);
             }
-
-            var gameId = gamesByPlayer.computeIfAbsent(playerWaiting, k -> UUID.randomUUID().toString());
-            playersByGame.computeIfAbsent(gameId, k -> new LinkedHashSet<>()).add(player);
+            var gameId = getGameId(playerWaiting);
+            getPlayersOfGame(gameId).add(player);
             return games.merge(gameId, new GameReady(gameId, playerWaiting, player), (oldState, newState) -> newState);
         }
     }
 
-    public GameState playGame(String gameId, Player player, Movement movement) {
+    private Set<Player> getPlayersOfGame(String gameId) {
+        return playersByGame.computeIfAbsent(gameId, k -> new LinkedHashSet<>());
+    }
 
-        AtomicReference<GameState> gameState = new AtomicReference<>(null);
+    private String getGameId(Player player) {
+        return gamesByPlayer.computeIfAbsent(player, k -> UUID.randomUUID().toString());
+    }
+
+    public GameState playGame(String gameId, Player player, Movement movement) {
         synchronized (this) {
-            games.computeIfPresent(gameId, (key, oldState) -> {
-                GameState newState = null;
+            var newState = games.computeIfPresent(gameId, (key, oldState) -> {
                 if (oldState instanceof GameReady gameReady) {
-                    newState = play(gameReady, player, movement);
+                    return play(gameReady, player, movement);
                 }
                 if (oldState instanceof GameRunning gameRunning) {
-                    newState = play(gameRunning, player, movement);
+                    return play(gameRunning, player, movement);
                 }
-                gameState.set(newState);
-                if (newState instanceof GameOver gameOver) {
-                    playersByGame.remove(gameId)
-                            .forEach(gamesByPlayer::remove);
-                    return null;
-                }
-                return newState;
+                return oldState;
             });
+            if (newState instanceof GameOver) {
+                playersByGame.remove(gameId)
+                        .forEach(gamesByPlayer::remove);
+                games.remove(gameId);
+            }
+            return Optional.ofNullable(newState).orElseGet(() -> new InvalidGame(gameId));
         }
-        return Optional.ofNullable(gameState.get()).orElseGet(() -> new InvalidGame(gameId));
     }
 
     private GameState play(GameReady gameReady, Player player, Movement movement) {
