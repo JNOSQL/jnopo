@@ -41,7 +41,7 @@ class GameOverTest {
             softly.assertThatThrownBy(() -> {
                         new GameOver(id, playerA, playerB, playerAmovement, playerBmovement);
                     }).as("should error when " + scenario)
-                    .isInstanceOfAny(RuntimeException.class);
+                    .isInstanceOfAny(NullPointerException.class);
 
         });
 

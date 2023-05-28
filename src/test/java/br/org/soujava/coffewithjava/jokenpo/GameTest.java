@@ -1,17 +1,63 @@
 package br.org.soujava.coffewithjava.jokenpo;
 
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.SoftAssertionsProvider;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.converter.ConvertWith;
+import org.junit.jupiter.params.provider.CsvSource;
 
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import static br.org.soujava.coffewithjava.jokenpo.Movement.PAPER;
 import static br.org.soujava.coffewithjava.jokenpo.Movement.ROCK;
 import static br.org.soujava.coffewithjava.jokenpo.Movement.SCISSORS;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 class GameTest {
+
+    @Test
+    void shouldErrorNewGameWithInvalidArgs() {
+        var game = new Game();
+        assertThatThrownBy(
+                () -> game.newGame(null))
+                .as("null value")
+                .isInstanceOf(NullPointerException.class);
+    }
+
+    @ParameterizedTest(name = "should error when {0} on playGame() method")
+    @CsvSource({
+            "movement is omitted,true,player1,",
+            "player is omitted,true,,ROCK",
+            "gameId is omitted,false,player1,ROCK",
+    })
+    void shouldErrorPlayGameWithInvalidArgs(
+            String scenario,
+            boolean getGameId,
+            @ConvertWith(GameOverTest.PlayerConverter.class)
+            Player player,
+            Movement movement
+    ) {
+
+        Player player1 = Player.of("player1");
+        Player player2 = Player.of("player2");
+
+        var game = new Game();
+
+        var gameState = game.newGame(player1);
+        var gameId = getGameId ? gameState.gameId() : null;
+
+        game.newGame(player2);
+
+        assertSoftly(softly -> {
+            softly.assertThatThrownBy(() -> game.playGame(gameId, player, movement))
+                    .as("should error when " + scenario)
+                    .isInstanceOf(RuntimeException.class);
+        });
+    }
+
 
     @Test
     void testHappyScenario() {
@@ -148,5 +194,6 @@ class GameTest {
                     .isEqualTo(invalidGameId);
         });
     }
+
 
 }

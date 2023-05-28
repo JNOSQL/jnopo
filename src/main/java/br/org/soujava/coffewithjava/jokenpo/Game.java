@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.requireNonNull;
 
 
 public class Game {
@@ -23,6 +24,7 @@ public class Game {
 
 
     public GameState newGame(Player player) {
+        requireNonNull(player,"player is required");
         synchronized (this) {
             var playerWaiting = waitingRoom.poll();
             if (isNull(playerWaiting) || player.equals(playerWaiting)) {
@@ -46,6 +48,9 @@ public class Game {
     }
 
     public GameState playGame(String gameId, Player player, Movement movement) {
+        requireNonNull(gameId,"gameId is required");
+        requireNonNull(player,"player is required");
+        requireNonNull(movement,"movement is required");
         synchronized (this) {
             var newState = games.computeIfPresent(gameId, (key, oldState) -> {
                 if (oldState instanceof GameReady gameReady) {
