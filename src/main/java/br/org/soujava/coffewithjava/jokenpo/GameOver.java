@@ -65,4 +65,26 @@ public record GameOver(String gameId,
                 .flatMap((v) -> Optional.of(playerBMovement))
                 .or(() -> Optional.of(playerAMovement));
     }
+
+    public Optional<GameOverLoserInfo> loserInfo() {
+        if (isTied()) {
+            return Optional.empty();
+        }
+        return Optional.of(new GameOverLoserInfo(this.gameId, this.loser().orElse(null), this.loserMovement().orElse(null)));
+    }
+
+    public Optional<GameOverWinnerInfo> winnerInfo() {
+        if (isTied()) {
+            return Optional.empty();
+        }
+        return Optional.of(new GameOverWinnerInfo(this.gameId, this.winner().orElse(null), this.winnerMovement().orElse(null)));
+    }
+
+    public GameOverPlayerInfo playerAInfo() {
+        return new GameOverPlayerInfo(this.gameId, this.playerA, this.playerAMovement);
+    }
+
+    public GameOverPlayerInfo playerBInfo() {
+        return new GameOverPlayerInfo(this.gameId, this.playerB, this.playerBMovement);
+    }
 }

@@ -1,5 +1,6 @@
 package br.org.soujava.coffewithjava.jokenpo;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -10,6 +11,8 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.requireNonNull;
@@ -22,35 +25,28 @@ public class Game {
     private final Map<String, Set<Player>> playersByGame = new HashMap<>();
     private final Map<String, GameState> games = new HashMap<>();
 
-
     public GameState newGame(Player player) {
-        requireNonNull(player,"player is required");
+        requireNonNull(player, "player is required");
         synchronized (this) {
             var playerWaiting = waitingRoom.poll();
             if (isNull(playerWaiting) || player.equals(playerWaiting)) {
-                var gameId = getGameId(player);
-                getPlayersOfGame(gameId).add(player);
+                var gameId = gamesByPlayer.computeIfAbsent(player, k -> UUID.randomUUID().toString());
+                playersByGame.computeIfAbsent(gameId, k -> new LinkedHashSet<>()).add(player);
                 waitingRoom.offer(player);
-                return new WaitingPlayers(gameId, player);
+                return games.merge(gameId, new WaitingPlayers(gameId, player), (oldState, newState) -> newState);
             }
-            var gameId = getGameId(playerWaiting);
-            getPlayersOfGame(gameId).add(player);
+            var gameId = gamesByPlayer.computeIfAbsent(playerWaiting, k -> UUID.randomUUID().toString());
+            gamesByPlayer.computeIfAbsent(player, k -> gameId);
+            playersByGame.computeIfAbsent(gameId, k -> new LinkedHashSet<>()).add(player);
             return games.merge(gameId, new GameReady(gameId, playerWaiting, player), (oldState, newState) -> newState);
         }
     }
 
-    private Set<Player> getPlayersOfGame(String gameId) {
-        return playersByGame.computeIfAbsent(gameId, k -> new LinkedHashSet<>());
-    }
-
-    private String getGameId(Player player) {
-        return gamesByPlayer.computeIfAbsent(player, k -> UUID.randomUUID().toString());
-    }
 
     public GameState playGame(String gameId, Player player, Movement movement) {
-        requireNonNull(gameId,"gameId is required");
-        requireNonNull(player,"player is required");
-        requireNonNull(movement,"movement is required");
+        requireNonNull(gameId, "gameId is required");
+        requireNonNull(player, "player is required");
+        requireNonNull(movement, "movement is required");
         synchronized (this) {
             var newState = games.computeIfPresent(gameId, (key, oldState) -> {
                 if (oldState instanceof GameReady gameReady) {
@@ -66,7 +62,7 @@ public class Game {
                         .forEach(gamesByPlayer::remove);
                 games.remove(gameId);
             }
-            return Optional.ofNullable(newState).orElseGet(() -> new InvalidGame(gameId));
+            return Optional.ofNullable(newState).orElseGet(() -> new GameInvalid(gameId));
         }
     }
 
@@ -109,6 +105,42 @@ public class Game {
     public Set<Player> playersByGame(String gameId) {
         synchronized (this) {
             return Collections.unmodifiableSet(playersByGame.getOrDefault(gameId, Set.of()));
+        }
+    }
+
+    public GameState getGameState(String gameId) {
+        if (isNull(gameId)) {
+            return new GameInvalid(null);
+        }
+        synchronized (this) {
+            return Optional.ofNullable(games.get(gameId)).orElse(new GameInvalid(gameId));
+        }
+    }
+
+    public GameState leavingGame(Player player) {
+        if (isNull(player)) {
+            return new GameInvalid(null);
+        }
+        synchronized (this) {
+            var gameId = gamesByPlayer.remove(player);
+            if (isNull(gameId)) {
+                return new GameInvalid(null);
+            }
+            Set<Player> players = playersByGame.getOrDefault(gameId, new LinkedHashSet<>());
+            players.remove(player);
+            Player opponent = null;
+            if (!players.isEmpty()) {
+                opponent = players.iterator().next();
+                gamesByPlayer.remove(opponent);
+                games.remove(gameId);
+            }
+            return new GameAbandoned(gameId, Stream.of(player, opponent).filter(Objects::nonNull).collect(Collectors.toUnmodifiableSet()));
+        }
+    }
+
+    public Stream<Player> getWaitingRoom() {
+        synchronized (this) {
+            return this.waitingRoom.stream();
         }
     }
 }

@@ -1,18 +1,19 @@
 package br.org.soujava.coffewithjava.jokenpo;
 
-import org.assertj.core.api.Assertions;
-import org.assertj.core.api.SoftAssertionsProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.converter.ConvertWith;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static br.org.soujava.coffewithjava.jokenpo.Movement.PAPER;
 import static br.org.soujava.coffewithjava.jokenpo.Movement.ROCK;
 import static br.org.soujava.coffewithjava.jokenpo.Movement.SCISSORS;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -58,9 +59,186 @@ class GameTest {
         });
     }
 
+    @Test
+    void shouldGetGameState() {
+        Player player1 = Player.of("player1");
+        Player player2 = Player.of("player2");
+
+        var game = new Game();
+
+        assertSoftly(softly -> {
+            var state = game.getGameState(null);
+            softly.assertThat(state)
+                    .as("should return a non-null GameState instance ever")
+                    .isNotNull();
+            softly.assertThat(state)
+                    .as("should return a " + GameInvalid.class.getSimpleName() + " instance when the provided gameId is null")
+                    .isInstanceOf(GameInvalid.class);
+
+            state = game.getGameState(UUID.randomUUID().toString());
+            softly.assertThat(state)
+                    .as("should return a non-null GameState instance ever")
+                    .isNotNull();
+            softly.assertThat(state)
+                    .as("should return a " + GameInvalid.class.getSimpleName() + " instance when the provided gameId is not valid")
+                    .isInstanceOf(GameInvalid.class);
+        });
+
+
+        var state2 = game.newGame(player1);
+
+        assertSoftly(softly -> {
+            var state = game.getGameState(state2.gameId());
+            softly.assertThat(state)
+                    .as("should return a non-null GameState instance ever")
+                    .isNotNull();
+            softly.assertThat(state)
+                    .as("returned game state should be equals to the same returned from the latest newGame(player) call")
+                    .isEqualTo(state2);
+        });
+
+        var state3 = game.newGame(player2);
+
+        assertSoftly(softly -> {
+            var state = game.getGameState(state3.gameId());
+            softly.assertThat(state)
+                    .as("should return a non-null GameState instance ever")
+                    .isNotNull();
+            softly.assertThat(state)
+                    .as("returned game state should be equals to the same returned from the latest newGame(player) call")
+                    .isEqualTo(state3);
+        });
+
+    }
+
 
     @Test
-    void testHappyScenario() {
+    void shouldLeavingGame() {
+        Player player1 = Player.of("player1");
+        Player player2 = Player.of("player2");
+
+        var game = new Game();
+
+        game.newGame(player1);
+        var gameReady = game.newGame(player2);
+
+        assertSoftly(softly -> {
+            softly.assertThat(gameReady)
+                    .as("should return a non-null GameState instance ever")
+                    .isNotNull();
+            softly.assertThat(gameReady)
+                    .as("should return a " + GameReady.class.getSimpleName() + " instance")
+                    .isInstanceOf(GameReady.class);
+        });
+
+
+        var gameAbandoned = game.leavingGame(player2);
+
+        assertSoftly(softly -> {
+            softly.assertThat(gameAbandoned)
+                    .as("should return a non-null GameState instance ever")
+                    .isNotNull();
+            softly.assertThat(gameAbandoned)
+                    .as("should return a " + GameAbandoned.class.getSimpleName() + " instance")
+                    .isInstanceOf(GameAbandoned.class);
+        });
+
+
+        var invalidGame = game.leavingGame(player2);
+
+        assertSoftly(softly -> {
+            softly.assertThat(invalidGame)
+                    .as("should return a non-null GameState instance ever")
+                    .isNotNull();
+            softly.assertThat(invalidGame)
+                    .as("should return a " + GameInvalid.class.getSimpleName() + " instance when the informed player is not playing any game")
+                    .isInstanceOf(GameInvalid.class);
+        });
+
+
+        var invalidGame2 = game.leavingGame(null);
+
+        assertSoftly(softly -> {
+            softly.assertThat(invalidGame2)
+                    .as("should return a non-null GameState instance ever")
+                    .isNotNull();
+            softly.assertThat(invalidGame2)
+                    .as("should return a " + GameInvalid.class.getSimpleName() + " instance when a null reference is passed as player")
+                    .isInstanceOf(GameInvalid.class);
+        });
+
+        var invalidGame3 = game.leavingGame(player1);
+
+        assertSoftly(softly -> {
+            softly.assertThat(invalidGame3)
+                    .as("should return a non-null GameState instance ever")
+                    .isNotNull();
+            softly.assertThat(invalidGame3)
+                    .as("should return a " + GameInvalid.class.getSimpleName() + " instance")
+                    .isInstanceOf(GameInvalid.class);
+        });
+
+    }
+
+
+    @Test
+    void shouldWaitingRoom() {
+        Player player1 = Player.of("player1");
+        Player player2 = Player.of("player2");
+
+        var game = new Game();
+
+        assertSoftly(softly -> {
+            Stream<Player> waitingRoom = game.getWaitingRoom();
+            softly.assertThat(waitingRoom)
+                    .as("should return a non-null Stream<Player> instance ever")
+                    .isNotNull();
+
+            softly.assertThat(waitingRoom.count())
+                    .as("waiting room should be empty")
+                    .isEqualTo(0L);
+        });
+
+        game.newGame(player1);
+
+        assertSoftly(softly -> {
+            Stream<Player> waitingRoom = game.getWaitingRoom();
+
+            softly.assertThat(waitingRoom)
+                    .as("should return a non-null Stream<Player> instance ever")
+                    .isNotNull();
+
+            var waitingPlayers = waitingRoom.toList();
+
+            softly.assertThat(waitingPlayers)
+                    .as("waiting room should be not empty")
+                    .isNotEmpty();
+
+            softly.assertThat(waitingPlayers)
+                    .as("player1 should be in waiting room")
+                    .hasSameElementsAs(List.of(player1));
+
+        });
+
+        game.newGame(player2);
+
+        assertSoftly(softly -> {
+            Stream<Player> waitingRoom = game.getWaitingRoom();
+
+            softly.assertThat(waitingRoom)
+                    .as("should return a non-null Stream<Player> instance ever")
+                    .isNotNull();
+
+            softly.assertThat(waitingRoom.count())
+                    .as("waiting room should be empty")
+                    .isEqualTo(0L);
+        });
+
+
+    }
+
+    @Test
+    void testBehavior() {
 
         Player player1 = Player.of("player1");
         Player player2 = Player.of("player2");
@@ -175,8 +353,8 @@ class GameTest {
 
         assertSoftly(softly -> {
             softly.assertThat(gameState7)
-                    .as("whenever some player plays their movements to an game that it's over then game's state should be " + InvalidGame.class.getName())
-                    .isInstanceOf(InvalidGame.class);
+                    .as("whenever some player plays their movements to an game that it's over then game's state should be " + GameInvalid.class.getName())
+                    .isInstanceOf(GameInvalid.class);
             softly.assertThat(gameState7.gameId())
                     .as("the game state should have the same gameId")
                     .isEqualTo(gameId);
@@ -187,8 +365,8 @@ class GameTest {
 
         assertSoftly(softly -> {
             softly.assertThat(gameState8)
-                    .as("whenever some player plays their movements to an invalid game then game's state should be " + InvalidGame.class.getName())
-                    .isInstanceOf(InvalidGame.class);
+                    .as("whenever some player plays their movements to an invalid game then game's state should be " + GameInvalid.class.getName())
+                    .isInstanceOf(GameInvalid.class);
             softly.assertThat(gameState8.gameId())
                     .as("the game state should have the same gameId")
                     .isEqualTo(invalidGameId);
