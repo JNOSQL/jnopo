@@ -561,8 +561,8 @@
                         updateOpponentName(msg.data.opponentName)
                         state.gameId = msg.data.gameId
                         waitingPlayers.hide()
-                        progressBar.reset();
                         gameRunning.show();
+                        progressBar.reset();
                         const interval = setInterval(() => {
                             progressBar.decrease(20);
                         }, 1000);
@@ -577,7 +577,7 @@
                                 }
                             };
                             sendMessage(n)
-                        }, 6000)
+                        }, 5000)
                     }
                 };
             }
