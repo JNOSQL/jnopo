@@ -15,7 +15,7 @@ import br.org.soujava.coffewithjava.jokenpo.Player;
 import br.org.soujava.coffewithjava.jokenpo.WaitingPlayers;
 import br.org.soujava.coffewithjava.jokenpo.server.Message.Field;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
@@ -50,12 +50,10 @@ public class GameServer {
 
     private static final Logger LOG = Logger.getLogger(GameServer.class);
 
-    Map<String, Session> sessionsById = new HashMap<>();
-    Map<String, PlayerData> playerDataBySession = new HashMap<>();
-    Game game = new Game();
+    @Inject
+    Sessions sessions;
 
-    public record PlayerData(String sessionId, Map<String, String> data) {
-    }
+    Game game = new Game();
 
 
     @OnOpen
@@ -65,44 +63,21 @@ public class GameServer {
     }
 
     private Optional<Session> getSession(Supplier<String> sessionIdSupplier) {
-        return getSession(sessionIdSupplier.get());
+        return sessions.getSession(sessionIdSupplier);
     }
 
     private Optional<Session> getSession(String sessionId) {
-        Optional<Session> sessionOfWaitingPlayer = Optional.empty();
-        synchronized (this) {
-            sessionOfWaitingPlayer = Optional.ofNullable(sessionsById.get(sessionId));
-        }
-        return sessionOfWaitingPlayer;
+        return sessions.getSession(sessionId);
     }
 
     private Optional<PlayerData> getPlayerData(String sessionId) {
-        PlayerData value;
-        synchronized (this) {
-            value = playerDataBySession.get(sessionId);
-        }
-        return Optional.ofNullable(value);
+        return sessions.getPlayerData(sessionId);
     }
 
     private void register(Session session, String playerName) {
-        synchronized (this) {
-            String sessionId = session.getId();
-            sessionsById.put(sessionId, session);
-            playerDataBySession.merge(
-                    sessionId,
-                    new PlayerData(sessionId,
-                            Map.of("id", sessionId, "name", playerName)), this::mergePlayerData);
-        }
+       sessions.register(session, playerName);
     }
 
-    private PlayerData mergePlayerData(PlayerData oldData, PlayerData newData) {
-        var data = new HashMap<>(oldData.data());
-        newData.data()
-                .forEach((key, value) ->
-                        data.merge(key, value, (a, b) -> b));
-
-        return new PlayerData(newData.sessionId(), data);
-    }
 
     @OnClose
     public void onClose(Session session, @PathParam("playerName") String playerName) {
@@ -111,11 +86,7 @@ public class GameServer {
 
     private void unregister(Session session) {
         leavingGame(session);
-        synchronized (this) {
-            String sessionId = session.getId();
-            sessionsById.remove(sessionId);
-            playerDataBySession.remove(sessionId);
-        }
+        sessions.unregister(session);
     }
 
     private void leavingGame(Session session) {
@@ -230,6 +201,8 @@ public class GameServer {
                                 });
                     }
                     if (gameState instanceof GameOver gameOver) {
+
+                        sessions.process(gameOver);
 
                         boolean isPlayerA = sessionPlayer.equals(gameOver.playerA());
 
