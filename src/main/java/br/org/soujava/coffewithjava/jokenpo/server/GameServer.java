@@ -331,6 +331,7 @@ public class GameServer {
 
     private void send(Session session, GameAbandoned gameAbandoned) {
 
+        sessions.process(gameAbandoned);
 
         Message message = Message.Type.GAME_OVER_ABANDONED.build(m -> m.set(gameId, gameAbandoned.gameId()));
 

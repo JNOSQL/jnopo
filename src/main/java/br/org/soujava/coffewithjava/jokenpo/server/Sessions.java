@@ -78,12 +78,12 @@ public class Sessions {
         return sessionOfWaitingPlayer;
     }
 
-    public void process(GameOver gameOver) {
+    public void process(GameState gameState) {
         eventListener.getAndAccumulate(BLIND_EVENT_LISTENER, (oldOne, newOne) -> {
             if(!BLIND_EVENT_LISTENER.equals(oldOne)){
                 return oldOne;
             }
             return newOne;
-        }).accept(gameOver);
+        }).accept(gameState);
     }
 }
