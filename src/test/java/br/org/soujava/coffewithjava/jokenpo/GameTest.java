@@ -13,7 +13,6 @@ import java.util.stream.Stream;
 import static br.org.soujava.coffewithjava.jokenpo.Movement.PAPER;
 import static br.org.soujava.coffewithjava.jokenpo.Movement.ROCK;
 import static br.org.soujava.coffewithjava.jokenpo.Movement.SCISSORS;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
