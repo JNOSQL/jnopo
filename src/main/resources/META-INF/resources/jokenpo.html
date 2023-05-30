@@ -430,6 +430,8 @@
             .forEach(btn => {
                 btn.addEventListener('click', () => {
                     socket.onclose();
+                    gamePanel.hide();
+                    initialForm.show();
                 }, false)
             });
 
