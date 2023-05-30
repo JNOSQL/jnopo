@@ -37,8 +37,6 @@
         body {
             display: flex;
             align-items: center;
-            padding-top: 40px;
-            padding-bottom: 40px;
             background-color: #f5f5f5;
         }
 
@@ -73,104 +71,190 @@
 <body class="text-center">
 
 <main class="form-signin w-100 m-auto">
-    <h1 class="h1 mb-3 fw-normal flex">JNoSQL Jokenpo</h1>
-    <div id="gamePanel" class="card" style="width: 100%;">
+    <div class="card gamePanel hide" style="width: 100%;">
         <div class="card-body">
-            <h5 class="card-title text-warning waitingPlayers">
-                <div class="spinner-border text-primary" role="status"></div>
-                Waiting for opponent...
-            </h5>
-            <h5 class="gameRunning card-title label">Opponent: <span id="opponentName"></span></h5>
-            <h5 class="gameRunning card-title text-danger">Choose your movement</h5>
-
-            <div class="progress gameRunning">
-                <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated"
-                     role="progressbar" aria-label="Animated striped example" aria-valuenow="75" aria-valuemin="0"
-                     aria-valuemax="100" style="width: 100%"></div>
+            <div class="container waitingPlayers hide ">
+                <div class="row justify-content">
+                    <div class="col-1 spinner-border text-warning" role="status"></div>
+                    <div class="col-10 m-0">
+                        <img src="img/waiting.png" style="width: 110%"/>
+                    </div>
+                </div>
             </div>
 
-            <img id="image" src="img/ROCK.png" style="width: 80%"/>
-            <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                <input type="radio" class="btn-check" value="ROCK" name="btnradio" id="btnradio1" autocomplete="off"
-                       checked>
-                <label class="w-100 btn btn-lg  btn-outline-warning" for="btnradio1">
-                    <img src="img/ROCK.png" class="w-100"/>
-                </label>
+            <div class="container youWin hide">
+                <div class="row justify-content">
+                    <div class="col-12 m-0">
+                        <img src="img/youwin.png" style="width: 100%"/>
+                    </div>
+                </div>
+                <div class="row justify-content m-3">
+                    <div class="gameRunning card-title label">Opponent: <span class="opponentName"></span></div>
+                </div>
+                <img class="opponentImage" src="img/ROCK.png" style="margin-bottom:10px;margin-top:10px;width: 30%"/>
+                <div class="row justify-content  m-3">
+                    <div class="gameRunning card-title label">You</div>
+                </div>
 
-                <input type="radio" class="btn-check" value="PAPER" name="btnradio" id="btnradio2" autocomplete="off">
-                <label class="w-100 btn btn-lg  btn-outline-warning" for="btnradio2">
-                    <img src="img/PAPER.png" class="w-100"/>
-                </label>
+                <img class="myImage" src="img/ROCK.png" style="margin-bottom:10px;margin-top:10px;width: 50%"/>
 
-                <input type="radio" class="btn-check" value="SCISSORS" name="btnradio" id="btnradio3"
-                       autocomplete="off">
-                <label class="w-100 btn btn-lg  btn-outline-warning" for="btnradio3">
-                    <img src="img/SCISSORS.png" class="w-100"/>
-                </label>
+            </div>
+
+            <div class="container youLose hide">
+                <div class="row justify-content">
+                    <div class="col-12 m-0">
+                        <img src="img/youlose.png" style="width: 100%"/>
+                    </div>
+                </div>
+                <div class="row justify-content m-3">
+                    <div class="gameRunning card-title label">Opponent: <span class="opponentName"></span></div>
+                </div>
+                <img class="opponentImage" src="img/ROCK.png" style="margin-bottom:10px;margin-top:10px;width: 50%"/>
+                <div class="row justify-content  m-3">
+                    <div class="gameRunning card-title label">You</div>
+                </div>
+
+                <img class="myImage" src="img/ROCK.png" style="margin-bottom:10px;margin-top:10px;width: 30%"/>
+
+            </div>
+
+            <div class="container tied hide">
+                <div class="row justify-content">
+                    <div class="col-12 m-0">
+                        <img src="img/tied.png" style="width: 100%"/>
+                    </div>
+                </div>
+                <div class="row justify-content m-3">
+                    <div class="gameRunning card-title label">Opponent: <span class="opponentName"></span></div>
+                </div>
+                <img class="opponentImage" src="img/ROCK.png" style="margin-bottom:10px;margin-top:10px;width: 35%"/>
+                <div class="row justify-content  m-3">
+                    <div class="gameRunning card-title label">You</div>
+                </div>
+
+                <img class="myImage" src="img/ROCK.png" style="margin-bottom:10px;margin-top:10px;width: 35%"/>
+
+            </div>
+
+            <div class="container abandoned hide">
+                <div class="row justify-content">
+                    <div class="col-12 m-0">
+                        <img src="img/abandoned.png" style="width: 100%"/>
+                    </div>
+                </div>
+                <div class="row justify-content m-3">
+                    <div class="gameRunning card-title label">Opponent: <span class="opponentName"></span></div>
+                </div>
+                <img class="opponentImage" src="img/whereistheopponent.png"
+                     style="margin-bottom:10px;margin-top:10px;width: 45%"/>
+                <div class="row justify-content  m-3">
+                    <div class="gameRunning card-title label">You</div>
+                </div>
+
+                <img class="myImage" src="img/ROCK.png" style="margin-bottom:10px;margin-top:10px;width: 25%"/>
+
+            </div>
+
+
+            <div class="container gameRunning hide ">
+                <div class="row justify-content">
+                    <img src="img/fight.png" style="width: 110%"/>
+                </div>
+                <div class="row">
+                    <div class="gameRunning card-title label">Opponent: <span id="opponentName"></span></div>
+                </div>
+                <div class="row progress">
+                    <div id="progress-bar" class="progress-bar progress-bar-striped bg-warning"
+                         role="progressbar" aria-label="Animated striped example" aria-valuenow="75" aria-valuemin="0"
+                         aria-valuemax="100" style="width: 100%"></div>
+                </div>
+            </div>
+            <div class="board hide">
+                <img class="myImage" src="img/ROCK.png" style="margin-bottom:10px;margin-top:10px;width: 100%"/>
+                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                    <input type="radio" class="btn-check" value="ROCK" name="btnradio" id="btnradio1" autocomplete="off"
+                           checked>
+                    <label class="w-100 btn btn-lg  btn-outline-danger" for="btnradio1">
+                        <img src="img/ROCK.png" class="w-100"/>
+                    </label>
+
+                    <input type="radio" class="btn-check" value="PAPER" name="btnradio" id="btnradio2"
+                           autocomplete="off">
+                    <label class="w-100 btn btn-lg  btn-outline-danger" for="btnradio2">
+                        <img src="img/PAPER.png" class="w-100"/>
+                    </label>
+
+                    <input type="radio" class="btn-check" value="SCISSORS" name="btnradio" id="btnradio3"
+                           autocomplete="off">
+                    <label class="w-100 btn btn-lg  btn-outline-danger" for="btnradio3">
+                        <img src="img/SCISSORS.png" class="w-100"/>
+                    </label>
+                </div>
             </div>
         </div>
-        <div class="card-body">
+        <div class="card-body tryPanel hide">
             <div class="dropdown">
-                <a class="btn btn-primary btn-lg w-100 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                <a class="btn btn-danger btn-lg w-100 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    Try again?
+                </a>
+                <ul class="dropdown-menu w-100 text-center">
+                    <li><a class="btn btn-lg btn-danger dropdown-item w-100 btnTryAgain" href="#">Yes!</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card-body gamePanel leavePanel">
+            <div class="dropdown">
+                <a class="btn btn-danger btn-lg w-100 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                    aria-expanded="false">
                     Leave Game
                 </a>
                 <ul class="dropdown-menu w-100 text-center">
-                    <li><a class="btn btn-lg btn-primary dropdown-item w-100" id="leaveBtn" href="#">Are you sure?</a>
+                    <li><a class="btn btn-lg btn-danger dropdown-item w-100 leaveBtn" href="#">Are you sure?</a>
                     </li>
                 </ul>
             </div>
         </div>
     </div>
+
     <form id="form" class="needs-validation" novalidate>
-        <h1 class="h3 mb-3 fw-normal">Let's play?</h1>
+        <img src="img/logo.png" style="margin-bottom: 15px;" width="100%"/>
+        <h1 class="h3 mb-3 fw-normal">Are you ready?</h1>
         <div class="form-floating">
-            <input required="required" class="form-control" id="floatingInput" maxlength="20" placeholder="John Doe">
-            <label for="floatingInput">Enter your name</label>
+            <input required="required" class="form-control" id="username" maxlength="20" placeholder="John Doe">
+            <label for="username">Enter your name</label>
         </div>
-        <button class="w-100 btn btn-lg btn-primary" type="submit">Go</button>
+        <button class="w-100 btn btn-lg btn-danger" type="submit">Let's go!</button>
     </form>
 
 
-    <!-- Modal -->
-    <div class="modal fade" id="modal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    ...
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
 </main>
+
 <script type="text/javascript">
     (() => {
+
         'use strict'
-
-        const gamePanel = document.getElementById('gamePanel')
-
-        const image = document.getElementById("image");
-
-        const modal = new bootstrap.Modal(document.getElementById("modal"), {backdrop: false, keyboard: false});
 
 
         const hideNode = node => {
             node.classList.add('hide');
-        };
+
+        }
 
         const showNode = node => {
             node.classList.remove('hide');
-        };
+        }
 
+        const singleHideOrShow = (element) => {
+            return {
+                element,
+                show: () => showNode(element),
+                hide: () => hideNode(element)
+            }
+
+        }
         const hideOrShow = (nodes) => {
             return {
                 nodes,
@@ -181,48 +265,262 @@
                     nodes.forEach(showNode);
                 }
             };
+
         }
+
+        const form = document.getElementById("form");
+
+        class ProgressBar {
+            constructor() {
+                this.element = document.getElementById("progress-bar")
+            }
+
+            reset() {
+                this.element.style.width = "100%";
+            }
+
+            size() {
+                return +this.element.style.width.replaceAll('%', '');
+            }
+
+            decrease(num) {
+                const total = this.size();
+                const newTotal = (total - num) < 0 ? 0 : total - num;
+                this.element.style.width = `${newTotal}%`;
+            }
+
+            increase(num) {
+                const total = this.size();
+                const newTotal = (total + num) > 100 ? 100 : total + num;
+                this.element.style.width = `${newTotal}%`;
+            }
+        }
+
+        const btnradios = document.getElementsByName("btnradio")
+
+        const updateMyImages = (movement) => {
+            state.movement = movement;
+            document.querySelectorAll('.myImage')
+                .forEach(image => {
+                    image.src = `img/${movement}.png`;
+                });
+        }
+
+
+        btnradios.forEach(btnradio => {
+            btnradio.addEventListener('click', event => {
+                const movement = event.target.value;
+                updateMyImages(movement);
+            }, false);
+
+        })
+
+        class BoardMovement {
+
+            constructor() {
+                this.btnradios = btnradios;
+            }
+
+            disable() {
+                btnradios.forEach(btnradio => {
+                    btnradio.disabled = 'disabled';
+                })
+            }
+
+            enable() {
+                btnradios.forEach(btnradio => {
+                    btnradio.disabled = '';
+                })
+            }
+        }
+
+        const initialForm = singleHideOrShow(form);
+
+        const gamePanel = hideOrShow(document.querySelectorAll(".gamePanel"))
+
+
+        const boardMovement = new BoardMovement();
+
+        const progressBar = new ProgressBar();
 
         const waitingPlayers = hideOrShow(document.querySelectorAll('.waitingPlayers'));
 
-        // waitingPlayers.hide();
+        const youWin = hideOrShow(document.querySelectorAll('.youWin'));
 
-        const gameRunning = hideOrShow(document.querySelectorAll('.gameRunning'));
+        const youLose = hideOrShow(document.querySelectorAll('.youLose'));
 
-        // gameRunning.hide();
+        const abandoned = hideOrShow(document.querySelectorAll('.abandoned'));
 
-        document.getElementById("leaveBtn").addEventListener('click', () => {
-            showForm();
-        }, false);
+        const tied = hideOrShow(document.querySelectorAll('.tied'));
 
-        const showGamePanel = () => {
-            form.classList.add('hide');
-            gamePanel.classList.remove('hide')
-        };
+        const tryPanel = hideOrShow(document.querySelectorAll('.tryPanel'))
 
-        const showForm = () => {
-            form.classList.remove('hide');
-            gamePanel.classList.add('hide')
-        };
+        const leavePanel = hideOrShow(document.querySelectorAll('.leavePanel'))
 
-        const btnradios = document.getElementsByName("btnradio")
-        btnradios.forEach(btnradio => {
-            btnradio.addEventListener('click', event => {
-                image.src = `img/${event.target.value}.png`;
-            }, false);
-        })
+        const board = hideOrShow(document.querySelectorAll('.board'))
 
-        const form = document.getElementById("form");
+        const gameRunning = hideOrShow(document.querySelectorAll('.gameRunning'))
+
+
+        const hidePanels = () => {
+            gamePanel.hide()
+            waitingPlayers.hide();
+            board.hide();
+            youLose.hide();
+            youWin.hide();
+            abandoned.hide();
+            leavePanel.hide();
+            tryPanel.hide();
+            tied.hide();
+        }
+
+
+        const updateOpponentName = (name) => {
+            document.querySelectorAll(".opponentName")
+                .forEach(div => {
+                    div.innerHTML = name;
+                })
+        }
+        const updateOpponentImages = (movement) => {
+            document.querySelectorAll('.opponentImages')
+                .forEach(image => {
+                    image.src = `img/${movement}.png`;
+                });
+        }
+
+
+        class State {
+
+            constructor() {
+                this.username = '';
+                this.victory = 0;
+                this.defeats = 0;
+                this.abandoned = 0;
+                this.ties = 0;
+                this.games = 0;
+                this.movement = 'ROCK';
+                this.opponentName = '';
+                this.opponentMovement = '';
+            }
+
+        }
+
+        const state = new State();
+
+
         form.addEventListener('submit', event => {
+            let input = document.getElementById("username");
             event.preventDefault()
             event.stopPropagation()
             if (form.checkValidity()) {
-                showGamePanel();
+                initialForm.hide();
+                state.username = input.value;
+                if (connected) {
+                    socket.close();
+                }
+                connect();
             }
             form.classList.add('was-validated')
         }, false);
 
-    })()
+
+        let connected = false;
+        let socket;
+
+        document.querySelectorAll(".leaveBtn")
+            .forEach(btn => {
+                btn.addEventListener('click', () => {
+                    socket.onclose();
+                }, false)
+            });
+
+        document.querySelectorAll(".btnTryAgain")
+            .forEach(btn => {
+                btn.addEventListener('click', () => {
+                    socket.onclose();
+                }, false);
+            })
+
+        const connect = () => {
+            if (!connected) {
+                const username = state.username;
+                socket = new WebSocket("ws://" + location.host + "/jokenpo/" + username);
+                socket.onopen = function () {
+                    connected = true;
+                    console.log("Connected to the web socket");
+                    gamePanel.show();
+                    board.show();
+                    boardMovement.enable();
+
+                };
+                socket.onclose = function () {
+                    connected = false;
+                    hidePanels();
+                    initialForm.show()
+                    console.log("Closed web socket");
+                };
+
+                const sendMessage = (message)=>{
+                    let data = JSON.stringify(message);
+                    console.log("Sending: " + data);
+                    socket.send(data)
+                }
+                socket.onmessage = function (m) {
+                    console.log("Got message: " + m.data);
+                    const msg = JSON.parse(m.data);
+                    if ("CONNECTED" === msg.type) {
+                        sendMessage({
+                            type: "NEW_GAME"
+                        })
+                    }
+                    if ("WAITING_PLAYERS" === msg.type) {
+                        state.gameId = msg.data.gameId;
+                        hidePanels();
+                        gamePanel.show();
+                        board.show();
+                        waitingPlayers.show()
+                        boardMovement.enable();
+                    }
+                    if ("GAME_OVER_ABANDONED" === msg.type) {
+                        updateOpponentName(null)
+                        state.gameId = null;
+                        waitingPlayers.hide();
+                        gameRunning.hide();
+                        board.hide();
+                        youLose.hide();
+                        youWin.hide();
+                        abandoned.show();
+                        tied.hide();
+                        leavePanel.hide();
+                        tryPanel.show();
+                    }
+                    if ("GAME_READY" === msg.type) {
+                        updateOpponentName(msg.data.opponentName)
+                        waitingPlayers.hide()
+                        progressBar.reset();
+                        gameRunning.show();
+                        const interval = setInterval(() => {
+                            progressBar.decrease(20);
+                        }, 1000);
+                        setTimeout(() => {
+                            clearInterval(interval);
+                            boardMovement.disable();
+                            const n={
+                                type: "PLAY_GAME",
+                                data: {
+                                    gameId: state.gameId,
+                                    movement: state.movement
+                                }
+                            };
+                            sendMessage(n)
+                        }, 6000)
+                    }
+                };
+            }
+        };
+
+    })
+    ()
 </script>
 
 <noscript>Please enable JavaScript to continue using this application.</noscript>

@@ -15,6 +15,7 @@ import br.org.soujava.coffewithjava.jokenpo.Player;
 import br.org.soujava.coffewithjava.jokenpo.WaitingPlayers;
 import br.org.soujava.coffewithjava.jokenpo.server.Message.Field;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
