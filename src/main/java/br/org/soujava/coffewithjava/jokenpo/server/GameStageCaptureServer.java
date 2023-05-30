@@ -1,6 +1,9 @@
 package br.org.soujava.coffewithjava.jokenpo.server;
 
+import br.org.soujava.coffewithjava.jokenpo.GameState;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
@@ -15,14 +18,18 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @ServerEndpoint("/jnopo-catch/{username}")
 @ApplicationScoped
-public class GameStageCaptureServer {
+public class GameStageCaptureServer implements Sessions.EventListener{
 
     private static final Logger LOG = Logger.getLogger(GameStageCaptureServer.class);
+
+    @Inject
+    Sessions jnopoSessions;
 
     Map<String, Session> sessions = new ConcurrentHashMap<>();
 
     @OnOpen
     public void onOpen(Session session, @PathParam("username") String username) {
+        jnopoSessions.setListener(this);
         sessions.put(username, session);
     }
 
@@ -59,4 +66,8 @@ public class GameStageCaptureServer {
         });
     }
 
+    @Override
+    public void accept(GameState gameState) {
+        broadcast(gameState.toString());
+    }
 }

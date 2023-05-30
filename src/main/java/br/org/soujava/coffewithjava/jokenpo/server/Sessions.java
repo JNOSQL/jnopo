@@ -18,6 +18,7 @@ public class Sessions {
     Map<String, Session> sessionsById = new HashMap<>();
     Map<String, PlayerData> playerDataBySession = new HashMap<>();
 
+
     public static interface EventListener extends Consumer<GameState> {
 
         default void accept(GameState gameState) {
@@ -76,6 +77,10 @@ public class Sessions {
             sessionOfWaitingPlayer = Optional.ofNullable(sessionsById.get(sessionId));
         }
         return sessionOfWaitingPlayer;
+    }
+
+    public void setListener(GameStageCaptureServer gameStageCaptureServer) {
+        this.eventListener.set(gameStageCaptureServer);
     }
 
     public void process(GameState gameState) {
