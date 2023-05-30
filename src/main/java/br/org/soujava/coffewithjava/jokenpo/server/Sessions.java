@@ -1,5 +1,6 @@
 package br.org.soujava.coffewithjava.jokenpo.server;
 
+import br.org.soujava.coffewithjava.jokenpo.GameDTO;
 import br.org.soujava.coffewithjava.jokenpo.GameOver;
 import br.org.soujava.coffewithjava.jokenpo.GameState;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -7,9 +8,7 @@ import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import jakarta.websocket.Session;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -104,7 +103,25 @@ public class Sessions {
 
     private Object process(GameOver gameOver) {
         // TODO add playerName
-        return gameOver;
+        Optional<PlayerData> playerDataA = getPlayerData(gameOver.playerA().id());
+        Optional<PlayerData> playerDataB = getPlayerData(gameOver.playerB().id());
+        Map<String, String> dataA = playerDataA.get().data();
+        Map<String, String> dataB = playerDataB.get().data();
+        List<String> objA = new ArrayList<>(dataA.values());
+        List<String> objB = new ArrayList<>(dataB.values());
+
+        GameDTO gameDTO = new GameDTO();
+
+        gameDTO.setNamePlayerA(objA.get(1));
+        gameDTO.setPlayerAId(gameOver.playerAInfo().gameId());
+        gameDTO.setPlayerAMovement(gameOver.playerAMovement().toString());
+
+        gameDTO.setNamePlayerA(objB.get(1));
+        gameDTO.setPlayerAId(gameOver.playerBInfo().gameId());
+        gameDTO.setPlayerAMovement(gameOver.playerBMovement().toString());
+
+        System.out.println();
+        return gameDTO;
     }
 
 }
