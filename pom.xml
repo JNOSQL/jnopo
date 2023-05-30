@@ -49,6 +49,11 @@
       <artifactId>quarkus-openshift</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.quarkiverse.jnosql</groupId>
+      <artifactId>quarkus-jnosql-document-mongodb</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+    <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit5</artifactId>
       <scope>test</scope>
