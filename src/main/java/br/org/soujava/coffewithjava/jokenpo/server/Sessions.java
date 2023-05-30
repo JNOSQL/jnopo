@@ -3,6 +3,8 @@ package br.org.soujava.coffewithjava.jokenpo.server;
 import br.org.soujava.coffewithjava.jokenpo.GameOver;
 import br.org.soujava.coffewithjava.jokenpo.GameState;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.json.bind.Jsonb;
+import jakarta.json.bind.JsonbBuilder;
 import jakarta.websocket.Session;
 
 import java.util.HashMap;
@@ -15,14 +17,15 @@ import java.util.function.Supplier;
 @ApplicationScoped
 public class Sessions {
 
+    private static final Jsonb jsonb = JsonbBuilder.create();
     Map<String, Session> sessionsById = new HashMap<>();
     Map<String, PlayerData> playerDataBySession = new HashMap<>();
 
 
-    public static interface EventListener extends Consumer<GameState> {
+    public static interface EventListener extends Consumer<String> {
 
-        default void accept(GameState gameState) {
-            System.out.println("broadcast : " + gameState);
+        default void accept(String data) {
+            System.out.println("broadcast : " + data);
         }
     }
 
@@ -83,12 +86,25 @@ public class Sessions {
         this.eventListener.set(gameStageCaptureServer);
     }
 
-    public void process(GameState gameState) {
+    private void sendData(String data) {
         eventListener.getAndAccumulate(BLIND_EVENT_LISTENER, (oldOne, newOne) -> {
-            if(!BLIND_EVENT_LISTENER.equals(oldOne)){
+            if (!BLIND_EVENT_LISTENER.equals(oldOne)) {
                 return oldOne;
             }
             return newOne;
-        }).accept(gameState);
+        }).accept(data);
     }
+
+    public void process(GameState gameState) {
+        if (gameState instanceof GameOver gameOver) {
+            String json = jsonb.toJson(process(gameOver));
+            sendData(json);
+        }
+    }
+
+    private Object process(GameOver gameOver) {
+        // TODO add playerName
+        return gameOver;
+    }
+
 }
