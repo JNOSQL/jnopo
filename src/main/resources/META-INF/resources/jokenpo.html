@@ -429,7 +429,17 @@
         document.querySelectorAll(".leaveBtn")
             .forEach(btn => {
                 btn.addEventListener('click', () => {
-                    socket.onclose();
+                    socket.close();
+
+                    waitingPlayers.hide();
+                    gameRunning.hide();
+                    board.hide();
+                    youLose.hide();
+                    youWin.hide();
+                    abandoned.hide();
+                    tied.hide();
+                    leavePanel.hide();
+                    tryPanel.hide();
                     gamePanel.hide();
                     initialForm.show();
                 }, false)
@@ -438,7 +448,16 @@
         document.querySelectorAll(".btnTryAgain")
             .forEach(btn => {
                 btn.addEventListener('click', () => {
-                    socket.onclose();
+                    socket.close();
+                    waitingPlayers.hide();
+                    gameRunning.hide();
+                    board.hide();
+                    youLose.hide();
+                    youWin.hide();
+                    abandoned.hide();
+                    tied.hide();
+                    leavePanel.hide();
+                    tryPanel.hide();
                     gamePanel.hide();
                     initialForm.show();
                 }, false);
