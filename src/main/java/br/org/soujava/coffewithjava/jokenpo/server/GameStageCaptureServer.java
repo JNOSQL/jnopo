@@ -67,7 +67,7 @@ public class GameStageCaptureServer implements Sessions.EventListener{
     }
 
     @Override
-    public void accept(GameState gameState) {
-        broadcast(gameState.toString());
+    public void accept(String data) {
+        broadcast(data);
     }
 }
