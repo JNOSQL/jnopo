@@ -466,7 +466,7 @@
         const connect = () => {
             if (!connected) {
                 const username = state.username;
-                socket = new WebSocket("ws://" + location.host + "/jokenpo/" + username);
+                socket = new WebSocket("ws://" + location.host + "/jnopo/" + username);
                 socket.onopen = function () {
                     connected = true;
                     console.log("Connected to the web socket");

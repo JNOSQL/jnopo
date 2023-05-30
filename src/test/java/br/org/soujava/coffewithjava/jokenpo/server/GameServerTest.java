@@ -42,9 +42,9 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 @QuarkusTest
 public class GameServerTest {
 
-    @TestHTTPResource("/jokenpo/player1")
+    @TestHTTPResource("/jnopo/player1")
     URI player1URI;
-    @TestHTTPResource("/jokenpo/player2")
+    @TestHTTPResource("/jnopo/player2")
     URI player2URI;
 
 

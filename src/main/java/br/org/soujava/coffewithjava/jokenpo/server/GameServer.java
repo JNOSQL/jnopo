@@ -25,8 +25,6 @@ import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import org.jboss.logging.Logger;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -44,7 +42,7 @@ import static br.org.soujava.coffewithjava.jokenpo.server.Message.Type.GAME_RUNN
 import static br.org.soujava.coffewithjava.jokenpo.server.Message.Type.WAITING_PLAYERS;
 import static java.util.Objects.isNull;
 
-@ServerEndpoint("/jokenpo/{playerName}")
+@ServerEndpoint("/jnopo/{playerName}")
 @ApplicationScoped
 public class GameServer {
 
