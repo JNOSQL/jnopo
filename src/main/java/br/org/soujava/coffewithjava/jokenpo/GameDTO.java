@@ -8,6 +8,51 @@ public class GameDTO {
     private String playerBId;
     private String playerBMovement;
 
+    private String gameId;
+
+
+    private String winner;
+
+    private String loser;
+
+    private Boolean isTied;
+
+
+    public String getWinner() {
+        return winner;
+    }
+
+    public void setWinner(String winner) {
+        this.winner = winner;
+    }
+
+    public String getLoser() {
+        return loser;
+    }
+
+    public void setLoser(String loser) {
+        this.loser = loser;
+    }
+
+    public Boolean getTied() {
+        return isTied;
+    }
+
+    public void setTied(Boolean tied) {
+        isTied = tied;
+    }
+
+
+    public String getGameId() {
+        return gameId;
+    }
+
+    public void setGameId(String gameId) {
+        this.gameId = gameId;
+    }
+
+
+
     public GameDTO(String namePlayerA, String playerAId, String playerAMovement, String namePlayerB, String playerBId, String playerBMovement) {
         this.namePlayerA = namePlayerA;
         this.playerAId = playerAId;

@@ -3,11 +3,13 @@ package br.org.soujava.coffewithjava.jokenpo.server;
 import br.org.soujava.coffewithjava.jokenpo.GameDTO;
 import br.org.soujava.coffewithjava.jokenpo.GameOver;
 import br.org.soujava.coffewithjava.jokenpo.GameState;
+import br.org.soujava.coffewithjava.jokenpo.Player;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import jakarta.websocket.Session;
 
+import java.sql.SQLOutput;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -112,13 +114,14 @@ public class Sessions {
 
         GameDTO gameDTO = new GameDTO();
 
-        gameDTO.setNamePlayerA(objA.get(1));
+        gameDTO.setNamePlayerA(objA.get(0));
         gameDTO.setPlayerAId(gameOver.playerAInfo().gameId());
         gameDTO.setPlayerAMovement(gameOver.playerAMovement().toString());
 
-        gameDTO.setNamePlayerA(objB.get(1));
-        gameDTO.setPlayerAId(gameOver.playerBInfo().gameId());
-        gameDTO.setPlayerAMovement(gameOver.playerBMovement().toString());
+        gameDTO.setNamePlayerB(objB.get(0));
+        gameDTO.setPlayerBId(gameOver.playerBInfo().gameId());
+        gameDTO.setPlayerBMovement(gameOver.playerBMovement().toString());
+
 
         System.out.println();
         return gameDTO;
