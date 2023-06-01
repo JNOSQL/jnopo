@@ -29,20 +29,21 @@ class GameTest {
 
     @ParameterizedTest(name = "should error when {0} on playGame() method")
     @CsvSource({
-            "movement is omitted,true,player1,",
-            "player is omitted,true,,ROCK",
-            "gameId is omitted,false,player1,ROCK",
+            "movement is omitted,true,player1,,player1,player2",
+            "player is omitted,true,,ROCK,player1,player2",
+            "gameId is omitted,false,player1,ROCK,player1,player2",
     })
     void shouldErrorPlayGameWithInvalidArgs(
             String scenario,
             boolean getGameId,
             @ConvertWith(GameOverTest.PlayerConverter.class)
             Player player,
-            Movement movement
+            Movement movement,
+            @ConvertWith(GameOverTest.PlayerConverter.class)
+            Player player1,
+            @ConvertWith(GameOverTest.PlayerConverter.class)
+            Player player2
     ) {
-
-        Player player1 = Player.of("player1");
-        Player player2 = Player.of("player2");
 
         var game = new Game();
 
@@ -60,8 +61,8 @@ class GameTest {
 
     @Test
     void shouldGetGameState() {
-        Player player1 = Player.of("player1");
-        Player player2 = Player.of("player2");
+        Player player1 = randomPlayer1();
+        Player player2 = randomPlayer2();
 
         var game = new Game();
 
@@ -110,11 +111,19 @@ class GameTest {
 
     }
 
+    private static Player randomPlayer1() {
+        return Player.of(UUID.randomUUID().toString(), "player1");
+    }
+
+    private static Player randomPlayer2() {
+        return Player.of(UUID.randomUUID().toString(), "player2");
+    }
+
 
     @Test
     void shouldLeavingGame() {
-        Player player1 = Player.of("player1");
-        Player player2 = Player.of("player2");
+        Player player1 = randomPlayer1();
+        Player player2 = randomPlayer2();
 
         var game = new Game();
 
@@ -182,8 +191,8 @@ class GameTest {
 
     @Test
     void shouldWaitingRoom() {
-        Player player1 = Player.of("player1");
-        Player player2 = Player.of("player2");
+        Player player1 = randomPlayer1();
+        Player player2 = randomPlayer2();
 
         var game = new Game();
 
@@ -239,8 +248,8 @@ class GameTest {
     @Test
     void testBehavior() {
 
-        Player player1 = Player.of("player1");
-        Player player2 = Player.of("player2");
+        Player player1 = randomPlayer1();
+        Player player2 = randomPlayer2();
 
         var game = new Game();
 

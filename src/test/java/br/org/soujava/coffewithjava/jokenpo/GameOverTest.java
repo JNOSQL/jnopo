@@ -183,7 +183,7 @@ class GameOverTest {
                 throw new IllegalArgumentException(
                         "The argument should be a string: " + source);
             }
-            return Player.of((String) source);
+            return Player.of((String) source, (String) source);
         }
     }
 

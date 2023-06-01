@@ -53,7 +53,6 @@ public class GameServer {
 
     Game game = new Game();
 
-
     @OnOpen
     public void onOpen(Session session, @PathParam("playerName") String playerName) {
         register(session, playerName);
@@ -68,12 +67,12 @@ public class GameServer {
         return sessions.getSession(sessionId);
     }
 
-    private Optional<PlayerData> getPlayerData(String sessionId) {
-        return sessions.getPlayerData(sessionId);
+    private Optional<Player> getPlayer(String sessionId) {
+        return sessions.getPlayer(sessionId);
     }
 
     private void register(Session session, String playerName) {
-       sessions.register(session, playerName);
+        sessions.register(session, playerName);
     }
 
 
@@ -88,23 +87,25 @@ public class GameServer {
     }
 
     private void leavingGame(Session session) {
-        GameState gameState = game.leavingGame(new Player(session.getId()));
-        if (gameState instanceof GameInvalid gameInvalid) {
-            send(session, GAME_INVALID.build(m -> m.set(gameId, gameInvalid.gameId())));
-        }
-        if (gameState instanceof GameAbandoned gameAbandoned) {
-            Player playerSession = Player.of(session.getId());
-            gameAbandoned.players().stream()
-                    .filter(p -> !playerSession.equals(p))
-                    .map(Player::id)
-                    .map(this::getSession)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .forEach(opponentSession -> {
-                        send(opponentSession, gameAbandoned);
-                    });
-        }
+        getPlayer(session.getId())
+                .ifPresent(player -> {
 
+                    GameState gameState = game.leavingGame(player);
+                    if (gameState instanceof GameInvalid gameInvalid) {
+                        send(session, GAME_INVALID.build(m -> m.set(gameId, gameInvalid.gameId())));
+                    }
+                    if (gameState instanceof GameAbandoned gameAbandoned) {
+                        gameAbandoned.players().stream()
+                                .filter(p -> !player.equals(p))
+                                .forEach(opponent -> {
+                                    getSession(opponent.id())
+                                            .ifPresent(opponentSession -> {
+                                                send(opponentSession, gameAbandoned);
+                                            });
+                                });
+                    }
+
+                });
     }
 
 
@@ -145,49 +146,27 @@ public class GameServer {
     }
 
     private void playerWantNewGame(Message message, Session playerSession) {
-        GameState gameState = game.newGame(new Player(playerSession.getId()));
-        if (gameState instanceof WaitingPlayers waitingPlayers) {
-            send(playerSession, waitingPlayers);
-        }
-        if (gameState instanceof GameReady gameReady) {
-            getSession(gameReady.playerA()::id)
-                    .ifPresent(session -> {
-                        send(session, gameReady);
-                    });
-            getSession(gameReady.playerB()::id)
-                    .ifPresent(session -> {
-                        send(session, gameReady);
-                    });
-        }
 
-        if (gameState instanceof GameRunning gameRunning) {
-            getSession(gameRunning.playerA()::id)
-                    .ifPresent(session -> {
-                        send(session, gameRunning);
-                    });
-            getSession(gameRunning.playerB()::id)
-                    .ifPresent(session -> {
-                        send(session, gameRunning);
-                    });
-        }
-    }
+        getPlayer(playerSession.getId())
+                .ifPresent(player -> {
 
+                    GameState gameState = game.newGame(player);
 
-    private void playerWantsToPlay(Message message, Session playerSession) {
-        Player sessionPlayer = Player.of(playerSession.getId());
-        Field.gameId.getOptional(message)
-                .ifPresent(gameId -> {
-                    GameState gameState = Field.movement.getOptional(message)
-                            .map(Movement::valueOf)
-                            .map(movement -> game.playGame(
-                                    gameId,
-                                    sessionPlayer,
-                                    movement))
-                            .orElseGet(() -> new GameInvalid(gameId));
-
-                    if (gameState instanceof GameInvalid gameInvalid) {
-                        send(playerSession, gameInvalid);
+                    if (gameState instanceof WaitingPlayers waitingPlayers) {
+                        send(playerSession, waitingPlayers);
                     }
+
+                    if (gameState instanceof GameReady gameReady) {
+                        getSession(gameReady.playerA()::id)
+                                .ifPresent(session -> {
+                                    send(session, gameReady);
+                                });
+                        getSession(gameReady.playerB()::id)
+                                .ifPresent(session -> {
+                                    send(session, gameReady);
+                                });
+                    }
+
                     if (gameState instanceof GameRunning gameRunning) {
                         getSession(gameRunning.playerA()::id)
                                 .ifPresent(session -> {
@@ -198,44 +177,75 @@ public class GameServer {
                                     send(session, gameRunning);
                                 });
                     }
-                    if (gameState instanceof GameOver gameOver) {
+                });
+    }
 
-                        sessions.process(gameOver);
 
-                        boolean isPlayerA = sessionPlayer.equals(gameOver.playerA());
+    private void playerWantsToPlay(Message message, Session playerSession) {
+        getPlayer(playerSession.getId())
+                .ifPresent(sessionPlayer -> {
+                    Field.gameId.getOptional(message)
+                            .ifPresent(gameId -> {
+                                GameState gameState = Field.movement.getOptional(message)
+                                        .map(Movement::valueOf)
+                                        .map(movement -> game.playGame(
+                                                gameId,
+                                                sessionPlayer,
+                                                movement))
+                                        .orElseGet(() -> new GameInvalid(gameId));
 
-                        if (gameOver.isTied()) {
-                            getSession(sessionPlayer.id())
-                                    .ifPresent(session -> {
-                                        send(session, GAME_OVER_DRAW, isPlayerA ? gameOver.playerBInfo() : gameOver.playerAInfo());
+                                if (gameState instanceof GameInvalid gameInvalid) {
+                                    send(playerSession, gameInvalid);
+                                }
+                                if (gameState instanceof GameRunning gameRunning) {
+                                    getSession(gameRunning.playerA()::id)
+                                            .ifPresent(session -> {
+                                                send(session, gameRunning);
+                                            });
+                                    getSession(gameRunning.playerB()::id)
+                                            .ifPresent(session -> {
+                                                send(session, gameRunning);
+                                            });
+                                }
+                                if (gameState instanceof GameOver gameOver) {
+
+                                    sessions.prepare(gameOver);
+
+                                    boolean isPlayerA = sessionPlayer.equals(gameOver.playerA());
+
+                                    if (gameOver.isTied()) {
+                                        getSession(sessionPlayer.id())
+                                                .ifPresent(session -> {
+                                                    send(session, GAME_OVER_DRAW, isPlayerA ? gameOver.playerBInfo() : gameOver.playerAInfo());
+                                                });
+                                        getSession(isPlayerA ? gameOver.playerB().id() : gameOver.playerA().id())
+                                                .ifPresent(session -> {
+                                                    send(session, GAME_OVER_DRAW, isPlayerA ? gameOver.playerAInfo() : gameOver.playerBInfo());
+                                                });
+                                    }
+
+                                    gameOver.winner().ifPresent(winner -> {
+                                        boolean isWinner = sessionPlayer.equals(winner);
+                                        getSession(sessionPlayer.id())
+                                                .ifPresent(session -> {
+                                                    if (isWinner) {
+                                                        send(session, GAME_OVER_YOU_WIN, gameOver.loserInfo().orElse(null));
+                                                    } else {
+                                                        send(session, GAME_OVER_YOU_LOSE, gameOver.winnerInfo().orElse(null));
+                                                    }
+                                                });
+
+                                        getSession(isPlayerA ? gameOver.playerB().id() : gameOver.playerA().id())
+                                                .ifPresent(session -> {
+                                                    if (isWinner) {
+                                                        send(session, GAME_OVER_YOU_LOSE, gameOver.winnerInfo().orElse(null));
+                                                    } else {
+                                                        send(session, GAME_OVER_YOU_WIN, gameOver.loserInfo().orElse(null));
+                                                    }
+                                                });
                                     });
-                            getSession(isPlayerA ? gameOver.playerB().id() : gameOver.playerA().id())
-                                    .ifPresent(session -> {
-                                        send(session, GAME_OVER_DRAW, isPlayerA ? gameOver.playerAInfo() : gameOver.playerBInfo());
-                                    });
-                        }
-
-                        gameOver.winner().ifPresent(winner -> {
-                            boolean isWinner = sessionPlayer.equals(winner);
-                            getSession(sessionPlayer.id())
-                                    .ifPresent(session -> {
-                                        if (isWinner) {
-                                            send(session, GAME_OVER_YOU_WIN, gameOver.loserInfo().orElse(null));
-                                        } else {
-                                            send(session, GAME_OVER_YOU_LOSE, gameOver.winnerInfo().orElse(null));
-                                        }
-                                    });
-
-                            getSession(isPlayerA ? gameOver.playerB().id() : gameOver.playerA().id())
-                                    .ifPresent(session -> {
-                                        if (isWinner) {
-                                            send(session, GAME_OVER_YOU_LOSE, gameOver.winnerInfo().orElse(null));
-                                        } else {
-                                            send(session, GAME_OVER_YOU_WIN, gameOver.loserInfo().orElse(null));
-                                        }
-                                    });
-                        });
-                    }
+                                }
+                            });
                 });
     }
 
@@ -251,11 +261,10 @@ public class GameServer {
 
         Message message = type.build(s -> s.set(gameId, gameOverPlayerInfo.gameId()));
 
-        getPlayerData(gameOverPlayerInfo.player().id())
-                .map(PlayerData::data)
-                .ifPresent(playerData -> {
+        getPlayer(gameOverPlayerInfo.player().id())
+                .ifPresent(player -> {
                     messageSetter(message)
-                            .set(opponentName, playerData.getOrDefault("name", "unknown"))
+                            .set(opponentName, player.name())
                             .set(opponentMovement, gameOverPlayerInfo.movement().name());
                 });
         send(session, message);
@@ -267,60 +276,53 @@ public class GameServer {
     }
 
     private void send(Session session, GameRunning gameRunning) {
-        var playerSession = Player.of(session.getId());
-        var playerData = getPlayerData(playerSession.id());
+        getPlayer(session.getId())
+                .ifPresent(playerSession -> {
+                    gameRunning.players()
+                            .filter(player -> !playerSession.equals(player))
+                            .forEach(opponent -> {
 
-        gameRunning.players()
-                .filter(player -> !playerSession.equals(player))
-                .forEach(opponent -> {
-                    Message messageToOpponent = GAME_RUNNING.build(s -> s.set(gameId, gameRunning.gameId()));
-                    playerData.map(PlayerData::data)
-                            .ifPresent(data -> messageSetter(messageToOpponent)
-                                    .set(opponentName, data.getOrDefault("name", "unknown")));
-                    getSession(opponent.id())
-                            .ifPresent(opponentSession -> send(opponentSession, messageToOpponent));
+                                Message messageToOpponent = GAME_RUNNING
+                                        .build(s -> s.set(gameId, gameRunning.gameId())
+                                                .set(opponentName, playerSession.name()));
 
-                    Message messageToOriginator = GAME_RUNNING.build(s -> s.set(gameId, gameRunning.gameId()));
+                                Message messageToOriginator = GAME_RUNNING
+                                        .build(s -> s.set(gameId, gameRunning.gameId())
+                                                .set(opponentName, opponent.name()));
 
-                    getPlayerData(opponent.id())
-                            .map(PlayerData::data)
-                            .ifPresent(data -> messageSetter(messageToOriginator)
-                                    .set(opponentName, data.getOrDefault("name", "unknown")));
+                                send(session, messageToOriginator);
+                                getSession(opponent.id()).ifPresent(
+                                        opponentSession -> send(opponentSession, messageToOpponent));
 
-                    send(session, messageToOriginator);
-
+                            });
                 });
     }
 
     private void send(Session session, GameReady gameReady) {
-        var playerSession = Player.of(session.getId());
-        var playerData = getPlayerData(playerSession.id());
+        getPlayer(session.getId())
+                .ifPresent(playerSession -> {
+                    gameReady.players()
+                            .filter(player -> !playerSession.equals(player))
+                            .forEach(opponent -> {
 
-        gameReady.players()
-                .filter(player -> !playerSession.equals(player))
-                .forEach(opponent -> {
-                    Message messageToOpponent = GAME_READY.build(s -> s.set(gameId, gameReady.gameId()));
-                    playerData.map(PlayerData::data)
-                            .ifPresent(data -> messageSetter(messageToOpponent)
-                                    .set(opponentName, data.getOrDefault("name", "unknown")));
-                    getSession(opponent.id())
-                            .ifPresent(opponentSession -> send(opponentSession, messageToOpponent));
+                                Message messageToOpponent = GAME_READY
+                                        .build(s -> s.set(gameId, gameReady.gameId())
+                                                .set(opponentName, playerSession.name()));
 
-                    Message messageToOriginator = GAME_READY.build(s -> s.set(gameId, gameReady.gameId()));
+                                Message messageToOriginator = GAME_READY
+                                        .build(s -> s.set(gameId, gameReady.gameId())
+                                                .set(opponentName, opponent.name()));
 
-                    getPlayerData(opponent.id())
-                            .map(PlayerData::data)
-                            .ifPresent(data -> messageSetter(messageToOriginator)
-                                    .set(opponentName, data.getOrDefault("name", "unknown")));
+                                send(session, messageToOriginator);
+                                getSession(opponent.id()).ifPresent(
+                                        opponentSession -> send(opponentSession, messageToOpponent));
 
-                    send(session, messageToOriginator);
-
+                            });
                 });
 
     }
 
     private void send(Session session, WaitingPlayers waitingPlayers) {
-        var playerSession = Player.of(session.getId());
 
         Message message = WAITING_PLAYERS.build(m -> m.set(gameId, waitingPlayers.gameId()));
 
@@ -329,7 +331,7 @@ public class GameServer {
 
     private void send(Session session, GameAbandoned gameAbandoned) {
 
-        sessions.process(gameAbandoned);
+        sessions.prepare(gameAbandoned);
 
         Message message = Message.Type.GAME_OVER_ABANDONED.build(m -> m.set(gameId, gameAbandoned.gameId()));
 
