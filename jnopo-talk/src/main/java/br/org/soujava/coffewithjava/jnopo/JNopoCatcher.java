@@ -1,4 +1,4 @@
-package org.eclipse.jakarta.hello;
+package br.org.soujava.coffewithjava.jnopo;
 
 import jakarta.ejb.Schedule;
 import jakarta.ejb.Singleton;
@@ -18,6 +18,9 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,6 +67,8 @@ public class JNopoCatcher {
     public void onMessage(String message) {
         logger.info("Received the event >> %s".formatted(message));
         var event = jsonb.fromJson(message, GameEvent.class);
+        logger.info("Converted input >> %s".formatted(event));
+
     }
 
     @Schedule(second = "*/15", hour = "*", minute = "*")
@@ -73,7 +78,7 @@ public class JNopoCatcher {
                 connect();
             }
             if (session != null || session.isOpen()) {
-                this.session.getBasicRemote().sendPing(ByteBuffer.wrap(new byte[]{1}));
+                this.session.getAsyncRemote().sendPing(ByteBuffer.wrap(new byte[]{1}));
                 logger.log(Level.INFO, "connection okay!");
             }
         } catch (IOException e) {
