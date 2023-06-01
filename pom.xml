@@ -18,8 +18,8 @@
     </properties>
 
     <modules>
-        <module>jnopo-game</module>
         <module>jnopo-core</module>
+        <module>jnopo-game</module>
         <module>jnopo-talk</module>
     </modules>
 </project>

@@ -1,12 +1,11 @@
 package org.eclipse.jakarta.hello;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.ejb.Schedule;
 import jakarta.ejb.Singleton;
 import jakarta.ejb.Startup;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.context.Initialized;
-import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
+import jakarta.json.bind.Jsonb;
+import jakarta.json.bind.JsonbBuilder;
 import jakarta.websocket.ClientEndpoint;
 import jakarta.websocket.ContainerProvider;
 import jakarta.websocket.DeploymentException;
@@ -14,13 +13,11 @@ import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.Session;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,12 +28,18 @@ public class JNopoCatcher {
 
     private final static Logger logger = Logger.getLogger(JNopoCatcher.class.getCanonicalName());
 
+    private final Jsonb jsonb = JsonbBuilder.create();
+
+    @Inject
+    @ConfigProperty(name = "jnopo-game.websocket-url")
+    private String url;
+
     private Session session;
 
     private void connect() {
         try {
             logger.info("connecting in...");
-            URI path = URI.create("ws://jnopo-game-dearrudam-2-dev.apps.sandbox-m2.ll9k.p1.openshiftapps.com/jnopo-catch/jnopo-talk");
+            URI path = URI.create(url);
             this.session = ContainerProvider.getWebSocketContainer()
                     .connectToServer(this, path);
             logger.info("connected to %s%n".formatted(path.toString()));
@@ -57,6 +60,12 @@ public class JNopoCatcher {
         logger.log(Level.WARNING, "unexpected error!", thr);
     }
 
+    @OnMessage
+    public void onMessage(String message) {
+        logger.info("Received the event >> %s".formatted(message));
+        var event = jsonb.fromJson(message, GameEvent.class);
+    }
+
     @Schedule(second = "*/15", hour = "*", minute = "*")
     public void checkConnection() {
         try {
@@ -75,11 +84,5 @@ public class JNopoCatcher {
             }
             this.session = null;
         }
-    }
-
-    @OnMessage
-    public void onMessage(String message) {
-        System.out.println(message);
-
     }
 }

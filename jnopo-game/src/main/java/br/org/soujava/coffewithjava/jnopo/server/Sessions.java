@@ -93,7 +93,7 @@ public class Sessions {
     }
 
     private Object prepare(GameOver gameOver) {
-        return Map.of(gameOver.getClass().getSimpleName(),gameOver);
+        return Map.of(gameOver.getClass().getSimpleName().toLowerCase(),gameOver);
     }
 
 }
