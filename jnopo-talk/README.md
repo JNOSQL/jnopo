@@ -30,7 +30,13 @@ docker exec -it jnopo-talk_mongo_1 mongosh -u root -p example
 
 ### Execute the project in DEV mode
 
-You can run the application by executing the following command from the directory where this file resides. Please ensure you have installed a [Java SE 8+ implementation](https://adoptium.net/?variant=openjdk8) appropriate for your Jakarta EE version and runtime choice (we have tested with Java SE 8, Java SE 11 and Java SE 17). Note, the [Maven Wrapper](https://maven.apache.org/wrapper/) is already included in the project, so a Maven install is not actually needed. You may first need to execute `chmod +x mvnw`.
+You can run the application by executing the following command from the directory where this file resides. Please ensure you
+have installed a Java SE 11+ or [Java
+SE 17 implementation](https://adoptium.net/?variant=openjdk17) appropriate for your Jakarta EE version and runtime choice (**we have created the project and tested it with Java 
+SE 17**)
+
+**Note, the [Maven 
+Wrapper](https://maven.apache.org/wrapper/) is already included in the project, so a Maven install is not actually needed. You may first need to execute `chmod +x mvnw`.**
 
 ```
 ./mvnw clean package wildfly:run
@@ -39,7 +45,7 @@ You can run the application by executing the following command from the director
 If you prefer to run the UI with redeployment support, please execute the following from this directory:
 
 ```
-mvn wildfly:dev
+./mvnw wildfly:dev
 ```
 
 
