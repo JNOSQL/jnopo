@@ -1,5 +1,6 @@
 package br.org.soujava.coffewithjava.jnopo;
 
+import br.org.soujava.coffewithjava.jnopo.core.GameOver;
 import jakarta.ejb.Schedule;
 import jakarta.ejb.Singleton;
 import jakarta.ejb.Startup;
@@ -37,6 +38,9 @@ public class JNopoCatcher {
     @ConfigProperty(name = "jnopo-game.websocket-url")
     private String url;
 
+    @Inject
+    private Playoffs playoffs;
+
     private Session session;
 
     private void connect() {
@@ -65,10 +69,23 @@ public class JNopoCatcher {
 
     @OnMessage
     public void onMessage(String message) {
-        logger.info("Received the event >> %s".formatted(message));
         var event = jsonb.fromJson(message, GameEvent.class);
-        logger.info("Converted input >> %s".formatted(event));
-
+        GameOver gameover = event.gameover();
+        playoffs.save(new GameMatch(
+                gameover.gameId(),
+                gameover.isTied(),
+                new PlayerInfo(new Player(gameover.playerA().name()), gameover.playerAMovement()),
+                new PlayerInfo(new Player(gameover.playerA().name()), gameover.playerBMovement()),
+                new WinnerInfo(gameover.winner()
+                        .map(p -> new Player(p.name()))
+                        .orElse(null), gameover.winnerMovement().orElse(null)),
+                new LoserInfo(
+                        gameover.loser()
+                                .map(p -> new Player(p.name()))
+                                .orElse(null),
+                        gameover.loserMovement().orElse(null))
+        ));
+        System.out.println("Salvou!!");
     }
 
     @Schedule(second = "*/15", hour = "*", minute = "*")
