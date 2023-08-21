@@ -77,7 +77,7 @@ public class JNopoCatcher {
             if (session == null || !session.isOpen()) {
                 connect();
             }
-            if (session != null || session.isOpen()) {
+            if (session != null && session.isOpen()) {
                 this.session.getAsyncRemote().sendPing(ByteBuffer.wrap(new byte[]{1}));
                 logger.log(Level.INFO, "connection okay!");
             }
