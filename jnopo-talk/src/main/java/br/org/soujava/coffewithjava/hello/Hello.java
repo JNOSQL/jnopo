@@ -1,4 +1,4 @@
-package org.eclipse.jakarta.hello;
+package br.org.soujava.coffewithjava.hello;
 
 public class Hello {
 

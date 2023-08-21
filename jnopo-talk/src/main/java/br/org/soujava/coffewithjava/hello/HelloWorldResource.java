@@ -1,4 +1,4 @@
-package org.eclipse.jakarta.hello;
+package br.org.soujava.coffewithjava.hello;
 
 import br.org.soujava.coffewithjava.jnopo.core.Player;
 import jakarta.ws.rs.GET;
