@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:jsf="http://xmlns.jcp.org/jsf"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<f:view contentType="text/html;charset=UTF-8" encoding="UTF-8">
+    <h:head>
+    </h:head>
+    <h:body>
+        <div id="content">
+            <h1>JNoPo - Ranking</h1>
+            <h:form>
+                <p:card>
+                    <p:pieChart id="pie" model="#{chartJsView.pieModel}" />
+                </p:card>
+                <p:poll interval="5" partialSubmit="true" listener="#{chartJsView.refresh}" update="pie"/>
+            </h:form>
+        </div>
+    </h:body>
+</f:view>
+</html>
