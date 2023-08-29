@@ -1,5 +1,6 @@
 package br.org.soujava.coffewithjava.jnopo;
 
+import br.org.soujava.coffewithjava.jnopo.core.GameOver;
 import jakarta.ejb.Schedule;
 import jakarta.ejb.Singleton;
 import jakarta.ejb.Startup;
@@ -13,6 +14,8 @@ import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.Session;
+import org.eclipse.jnosql.mapping.Database;
+import org.eclipse.jnosql.mapping.DatabaseType;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.IOException;
@@ -67,9 +70,11 @@ public class JNopoCatcher {
     public void onMessage(String message) {
         logger.info("Received the event >> %s".formatted(message));
         var event = jsonb.fromJson(message, GameEvent.class);
+        save(event);
         logger.info("Converted input >> %s".formatted(event));
 
     }
+
 
     @Schedule(second = "*/15", hour = "*", minute = "*")
     public void checkConnection() {
@@ -90,4 +95,26 @@ public class JNopoCatcher {
             this.session = null;
         }
     }
+
+    @Inject
+    @Database(DatabaseType.DOCUMENT)
+    Playoffs playoffs;
+
+    private void save(GameEvent event) {
+        var game = event.gameover();
+        var match = new GameMatch(game.gameId(),
+                new PlayerInfo(game.playerA().name(), game.playerAMovement()),
+                new PlayerInfo(game.playerB().name(), game.playerBMovement()),
+                game.isTied(),
+                game.winnerInfo()
+                        .map(p -> new PlayerInfo(p.player().name(), p.movement()))
+                        .orElse(null),
+                game.loserInfo()
+                        .map(p -> new PlayerInfo(p.player().name(), p.movement()))
+                        .orElse(null)
+        );
+        playoffs.save(match);
+    }
+
+
 }

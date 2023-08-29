@@ -19,13 +19,6 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
       ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
 
-  arangodb-db:
-    image: arangodb/arangodb
-    container_name: arangodb-db
-    environment:
-      - ARANGO_NO_AUTH=1
-    ports:
-      - "8529:8529"
 
   couchbase-db:
     image: couchbase
