@@ -1,6 +1,7 @@
 package br.org.soujava.coffewithjava.jnopo;
 
 import br.org.soujava.coffewithjava.jnopo.core.GameOver;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import jakarta.ejb.Schedule;
 import jakarta.ejb.Singleton;
 import jakarta.ejb.Startup;
@@ -67,6 +68,7 @@ public class JNopoCatcher {
     }
 
     @OnMessage
+    @WithSpan
     public void onMessage(String message) {
         logger.info("Received the event >> %s".formatted(message));
         var event = jsonb.fromJson(message, GameEvent.class);
@@ -100,6 +102,7 @@ public class JNopoCatcher {
     @Database(DatabaseType.DOCUMENT)
     Playoffs playoffs;
 
+    @WithSpan
     private void save(GameEvent event) {
         var game = event.gameover();
         var match = new GameMatch(game.gameId(),
