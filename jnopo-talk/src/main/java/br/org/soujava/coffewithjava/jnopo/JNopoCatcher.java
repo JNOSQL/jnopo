@@ -5,6 +5,7 @@ import io.opentelemetry.instrumentation.annotations.WithSpan;
 import jakarta.ejb.Schedule;
 import jakarta.ejb.Singleton;
 import jakarta.ejb.Startup;
+import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
@@ -43,6 +44,9 @@ public class JNopoCatcher {
 
     private Session session;
 
+    @Inject
+    private Event<GameEvent> eventPublisher;
+
     private void connect() {
         try {
             logger.info("connecting in...");
@@ -71,7 +75,7 @@ public class JNopoCatcher {
     public void onMessage(String message) {
         logger.info("Received the event >> %s".formatted(message));
         var event = jsonb.fromJson(message, GameEvent.class);
-        save(event);
+        eventPublisher.fire(event);
         logger.info("Converted input >> %s".formatted(event));
 
     }
@@ -98,26 +102,7 @@ public class JNopoCatcher {
         }
     }
 
-    @Inject
-    @Database(DatabaseType.DOCUMENT)
-    Playoffs playoffs;
 
-    @WithSpan
-    private void save(GameEvent event) {
-        var game = event.gameover();
-        var match = new GameMatch(game.gameId(),
-                new PlayerInfo(game.playerA().name(), game.playerAMovement()),
-                new PlayerInfo(game.playerB().name(), game.playerBMovement()),
-                game.isTied(),
-                game.winnerInfo()
-                        .map(p -> new PlayerInfo(p.player().name(), p.movement()))
-                        .orElse(null),
-                game.loserInfo()
-                        .map(p -> new PlayerInfo(p.player().name(), p.movement()))
-                        .orElse(null)
-        );
-        playoffs.save(match);
-    }
 
 
 }
