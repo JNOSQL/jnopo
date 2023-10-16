@@ -70,6 +70,16 @@
             <artifactId>jnosql-couchbase</artifactId>
             <version>${jnosql.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-api</artifactId>
+            <version>1.26.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry.instrumentation</groupId>
+            <artifactId>opentelemetry-instrumentation-annotations</artifactId>
+            <version>1.26.0</version>
+        </dependency>
 
     </dependencies>
 
