@@ -1,5 +1,6 @@
 package br.org.soujava.coffewithjava.jnopo;
 
+import br.org.soujava.coffewithjava.jnopo.core.GameOver;
 import io.opentelemetry.instrumentation.annotations.WithSpan;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
@@ -9,26 +10,22 @@ import org.eclipse.jnosql.mapping.DatabaseType;
 
 @ApplicationScoped
 public class GameEventProcessor {
-
     @Inject
     @Database(DatabaseType.DOCUMENT)
     Playoffs playoffs;
 
     @WithSpan
     public void process(@Observes GameEvent event) {
-        var game = event.gameover();
-        var match = new GameMatch(game.gameId(),
-                new PlayerInfo(game.playerA().name(), game.playerAMovement()),
-                new PlayerInfo(game.playerB().name(), game.playerBMovement()),
-                game.isTied(),
-                game.winnerInfo()
-                        .map(p -> new PlayerInfo(p.player().name(), p.movement()))
-                        .orElse(null),
-                game.loserInfo()
-                        .map(p -> new PlayerInfo(p.player().name(), p.movement()))
-                        .orElse(null)
+        final GameOver game = event.gameover();
+        var gameMatch= new GameMatch(
+                game.gameId(),
+                new PlayerInfo(game.playerA().name(),game.playerAMovement()),
+                new PlayerInfo(game.playerB().name(),game.playerBMovement()),
+                game.winnerInfo().map(g->new PlayerInfo(g.player().name(),g.movement())).orElse(null),
+                game.loserInfo().map(g->new PlayerInfo(g.player().name(),g.movement())).orElse(null),
+                game.isTied()
         );
-        playoffs.save(match);
-    }
+        playoffs.save(gameMatch);
+     }
 
 }

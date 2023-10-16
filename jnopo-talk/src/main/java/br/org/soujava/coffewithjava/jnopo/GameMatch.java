@@ -13,10 +13,10 @@ public record GameMatch(
         @Column
         PlayerInfo playerB,
         @Column
-        boolean tied,
-        @Column
         PlayerInfo winner,
         @Column
-        PlayerInfo loser
+        PlayerInfo loser,
+        @Column
+        Boolean tied
 ) {
 }
