@@ -25,6 +25,9 @@ import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import org.jboss.logging.Logger;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -72,7 +75,7 @@ public class GameServer {
     }
 
     private void register(Session session, String playerName) {
-        sessions.register(session, playerName);
+        sessions.register(session, URLDecoder.decode(playerName, StandardCharsets.UTF_8));
     }
 
 

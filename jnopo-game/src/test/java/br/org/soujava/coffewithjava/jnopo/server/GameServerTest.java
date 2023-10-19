@@ -28,9 +28,9 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 @QuarkusTest
 public class GameServerTest {
 
-    @TestHTTPResource("/jnopo/player1")
+    @TestHTTPResource("/jnopo/player%201")
     URI player1URI;
-    @TestHTTPResource("/jnopo/player2")
+    @TestHTTPResource("/jnopo/player%202")
     URI player2URI;
 
 
@@ -134,8 +134,8 @@ public class GameServerTest {
                             .isNotNull();
 
                     softly.assertThat(Message.Field.opponentName.get(gameReadyFromSession2))
-                            .as(" opponent of player2 should be player1")
-                            .isEqualTo("player1");
+                            .as(" opponent of player2 should be player 1")
+                            .isEqualTo("player 1");
 
                     var gameIdSession2 = Message.Field.gameId.get(gameReadyFromSession2);
 
@@ -146,8 +146,8 @@ public class GameServerTest {
                             .isNotNull();
 
                     softly.assertThat(Message.Field.opponentName.get(gameReadyFromSession1))
-                            .as("opponent of player1 should be player2")
-                            .isEqualTo("player2");
+                            .as("opponent of player 1 should be player 2")
+                            .isEqualTo("player 2");
 
                     var gameIdSession1 = Message.Field.gameId.get(gameReadyFromSession1);
 
@@ -181,7 +181,7 @@ public class GameServerTest {
 
                     softly.assertThat(Message.Field.opponentName.get(gameOverSession1))
                             .as("loser should be player2")
-                            .isEqualTo("player2");
+                            .isEqualTo("player 2");
 
                     softly.assertThat(Message.Field.opponentMovement.get(gameOverSession1))
                             .as("loser movement should be " + Movement.SCISSORS.name())
@@ -195,7 +195,7 @@ public class GameServerTest {
                             .isNotNull();
 
                     softly.assertThat(Message.Field.opponentName.get(gameOverSession2))
-                            .as("winner should be player1")
+                            .as("winner should be player 1")
                             .isNotNull();
 
                     softly.assertThat(Message.Field.opponentMovement.get(gameOverSession2))
@@ -249,8 +249,8 @@ public class GameServerTest {
                             .isNotNull();
 
                     softly.assertThat(Message.Field.opponentName.get(gameReadyFromSession2))
-                            .as(" opponent of player2 should be player1")
-                            .isEqualTo("player1");
+                            .as(" opponent of player 2 should be player 1")
+                            .isEqualTo("player 1");
 
                     var gameIdSession2 = Message.Field.gameId.get(gameReadyFromSession2);
 
@@ -261,8 +261,8 @@ public class GameServerTest {
                             .isNotNull();
 
                     softly.assertThat(Message.Field.opponentName.get(gameReadyFromSession1))
-                            .as("opponent of player1 should be player2")
-                            .isEqualTo("player2");
+                            .as("opponent of player 1 should be player 2")
+                            .isEqualTo("player 2");
 
                     var gameIdSession1 = Message.Field.gameId.get(gameReadyFromSession1);
 
@@ -295,8 +295,8 @@ public class GameServerTest {
                             .isNotNull();
 
                     softly.assertThat(Message.Field.opponentName.get(gameOverSession1))
-                            .as("opponent should be player2")
-                            .isEqualTo("player2");
+                            .as("opponent should be player 2")
+                            .isEqualTo("player 2");
 
                     softly.assertThat(Message.Field.opponentMovement.get(gameOverSession1))
                             .as("opponent movement should be " + Movement.ROCK.name())
@@ -310,8 +310,8 @@ public class GameServerTest {
                             .isNotNull();
 
                     softly.assertThat(Message.Field.opponentName.get(gameOverSession2))
-                            .as("opponent should be player1")
-                            .isEqualTo("player1");
+                            .as("opponent should be player 1")
+                            .isEqualTo("player 1");
 
                     softly.assertThat(Message.Field.opponentMovement.get(gameOverSession2))
                             .as("opponent movement should be " + Movement.ROCK.name())
@@ -365,8 +365,8 @@ public class GameServerTest {
                                 .isNotNull();
 
                         softly.assertThat(Message.Field.opponentName.get(gameReadyFromSession2))
-                                .as(" opponent of player2 should be player1")
-                                .isEqualTo("player1");
+                                .as(" opponent of player2 should be player 1")
+                                .isEqualTo("player 1");
 
                         var gameIdSession2 = Message.Field.gameId.get(gameReadyFromSession2);
 
@@ -377,8 +377,8 @@ public class GameServerTest {
                                 .isNotNull();
 
                         softly.assertThat(Message.Field.opponentName.get(gameReadyFromSession1))
-                                .as("opponent of player1 should be player2")
-                                .isEqualTo("player2");
+                                .as("opponent of player 1 should be player 2")
+                                .isEqualTo("player 2");
 
                         var gameIdSession1 = Message.Field.gameId.get(gameReadyFromSession1);
 
