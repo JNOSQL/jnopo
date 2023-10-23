@@ -8,7 +8,8 @@ import org.eclipse.jnosql.mapping.Database;
 import org.eclipse.jnosql.mapping.DatabaseType;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Path("/playoffs")
 @Consumes({MediaType.APPLICATION_JSON})
@@ -26,14 +27,37 @@ public class PlayoffsResource {
     }
 
     @GET
+    @Path("/winners")
     @WithSpan
-    public List<GameMatch> winners(
-            @QueryParam("winner") String winnerName,
-            @QueryParam("loser") String loserName
+    public Set<String> getWinners(
+            @QueryParam("name") String name
     ) {
-        if (winnerName != null)
-            return playoffs.findByWinnerNameLike(winnerName);
-        return playoffs.findAll().toList();
+        if (name != null)
+            return playoffs.findByWinnerNameLike(name)
+                    .stream()
+                    .map(g -> g.winner().name())
+                    .collect(Collectors.toSet());
+        return playoffs.listTiedPlayoffs(false)
+                .stream()
+                .map(g -> g.winner().name())
+                .collect(Collectors.toSet());
+    }
+
+    @GET
+    @Path("/losers")
+    @WithSpan
+    public Set<String> getLosers(
+            @QueryParam("name") String name
+    ) {
+        if (name != null)
+            return playoffs.findByLoserNameLike(name)
+                    .stream()
+                    .map(g -> g.loser().name())
+                    .collect(Collectors.toSet());
+        return playoffs.listTiedPlayoffs(false)
+                .stream()
+                .map(g -> g.loser().name())
+                .collect(Collectors.toSet());
     }
 
 }
