@@ -59,3 +59,17 @@ If you want to learn more about building native executables, please consult http
 WebSocket communication channel starter code
 
 [Related guide section...](https://quarkus.io/guides/websockets)
+
+## Deploy on Openshift Developer Sandbox for free
+
+- create a  Openshift Developer Sandbox for free here: https://developers.redhat.com/developer-sandbox ;
+- install the `oc` - OpenShift Command Line Interface (CLI);
+- get your token and setting up your local machine with a similar command:
+    ```bash 
+    oc login --token=<YOUR TOKEN> --server=https://<OPENSHIFT URL WITH PORT>
+    ```
+- Execute the maven command using the `openshift` profile:
+
+    ```bash
+    ./mvnw install -Popenshift
+    ```
