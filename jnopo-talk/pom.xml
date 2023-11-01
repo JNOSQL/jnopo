@@ -26,7 +26,7 @@
         <compiler-plugin.version>3.10.1</compiler-plugin.version>
         <war-plugin.version>3.3.2</war-plugin.version>
         <wildfly-plugin.version>4.2.0.Final</wildfly-plugin.version>
-        <jnosql.version>1.0.2</jnosql.version>
+        <jnosql.version>1.0.3-SNAPSHOT</jnosql.version>
     </properties>
 
     <dependencies>
