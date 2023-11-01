@@ -11,8 +11,11 @@ import java.util.List;
 public interface Playoffs extends PageableRepository<GameMatch,String> {
     List<GameMatch> findByWinnerNameLike(String name);
 
-    @Query("select * from GameMatch where tied=@tied")
-    List<GameMatch> listTiedPlayoffs(@Param("tied") boolean tied);
+    @Query("select * from GameMatch where tied=true")
+    List<GameMatch> listTiedPlayoffs();
+
+    @Query("select * from GameMatch where tied=false")
+    List<GameMatch> listPlayoffsWithWinnerAndLoser();
 
     List<GameMatch> findByLoserNameLike(String name);
 }

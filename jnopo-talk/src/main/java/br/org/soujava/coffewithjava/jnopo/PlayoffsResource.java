@@ -4,6 +4,7 @@ import io.opentelemetry.instrumentation.annotations.WithSpan;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.eclipse.jnosql.mapping.Database;
 import org.eclipse.jnosql.mapping.DatabaseType;
 
@@ -23,7 +24,7 @@ public class PlayoffsResource {
     @Path("/tied")
     @WithSpan
     public List<GameMatch> tiedPlayoffs() {
-        return playoffs.listTiedPlayoffs(true);
+        return playoffs.listTiedPlayoffs();
     }
 
     @GET
@@ -37,7 +38,7 @@ public class PlayoffsResource {
                     .stream()
                     .map(g -> g.winner().name())
                     .collect(Collectors.toSet());
-        return playoffs.listTiedPlayoffs(false)
+        return playoffs.listPlayoffsWithWinnerAndLoser()
                 .stream()
                 .map(g -> g.winner().name())
                 .collect(Collectors.toSet());
@@ -49,15 +50,8 @@ public class PlayoffsResource {
     public Set<String> getLosers(
             @QueryParam("name") String name
     ) {
-        if (name != null)
-            return playoffs.findByLoserNameLike(name)
-                    .stream()
-                    .map(g -> g.loser().name())
-                    .collect(Collectors.toSet());
-        return playoffs.listTiedPlayoffs(false)
-                .stream()
-                .map(g -> g.loser().name())
-                .collect(Collectors.toSet());
+        // TODO
+        throw new WebApplicationException(Response.Status.SERVICE_UNAVAILABLE);
     }
 
 }
