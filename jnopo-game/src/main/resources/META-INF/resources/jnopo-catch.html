@@ -50,6 +50,12 @@
 <script type="text/javascript">
     var connected = false;
     var socket;
+    const getProtocol = ()=>{
+        if(location.protocol === "https:"){
+            return "wss";
+        }
+        return "ws";
+    }
 
     $( document ).ready(function() {
         $("#connect").click(connect);
@@ -78,7 +84,8 @@
         if (! connected) {
             var name = $("#name").val();
             console.log("Val: " + name);
-            socket = new WebSocket("ws://" + location.host + "/jnopo-catch/" + name);
+            const wsURL = `${getProtocol()}://${location.host}/jnopo-catch/${name}`;
+            socket = new WebSocket(wsURL);
             socket.onopen = function() {
                 connected = true;
                 console.log("Connected to the web socket");

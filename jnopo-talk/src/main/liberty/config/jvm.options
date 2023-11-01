@@ -1,0 +1,4 @@
+-javaagent:jdbc/opentelemetry-javaagent-1.19.0.jar
+-Dotel.service.name=eclipsecon
+-Dotel.traces.exporter=jaeger
+-Dotel.instrumentation.opentelemetry-api.enabled=false

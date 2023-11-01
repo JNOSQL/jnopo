@@ -235,6 +235,12 @@
 
         'use strict'
 
+        const getProtocol = () => {
+            if(location.protocol === "https:"){
+                return "wss";
+            }
+            return "ws";
+        }
 
         const hideNode = node => {
             node.classList.add('hide');
@@ -466,7 +472,8 @@
         const connect = () => {
             if (!connected) {
                 const username = state.username;
-                socket = new WebSocket("ws://" + location.host + "/jnopo/" + username);
+                const wsURL = `${getProtocol()}://${location.host}/jnopo/${username}`;
+                socket = new WebSocket(wsURL);
                 socket.onopen = function () {
                     connected = true;
                     console.log("Connected to the web socket");
