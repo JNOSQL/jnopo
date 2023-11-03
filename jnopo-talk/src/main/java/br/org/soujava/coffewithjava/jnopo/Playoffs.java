@@ -1,7 +1,6 @@
 package br.org.soujava.coffewithjava.jnopo;
 
 import jakarta.data.repository.PageableRepository;
-import jakarta.data.repository.Param;
 import jakarta.data.repository.Query;
 import jakarta.data.repository.Repository;
 
