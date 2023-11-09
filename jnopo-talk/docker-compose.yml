@@ -10,7 +10,7 @@ services:
       - 27017:27017
 
   mongo-express:
-    image: mongo-express
+    image: mongo-express:1.0.0-alpha
     restart: always
     ports:
       - 8081:8081
