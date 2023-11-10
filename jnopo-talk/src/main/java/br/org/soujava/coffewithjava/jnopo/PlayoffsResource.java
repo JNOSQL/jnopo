@@ -50,8 +50,21 @@ public class PlayoffsResource {
     public Set<String> getLosers(
             @QueryParam("name") String name
     ) {
-        // TODO
-        throw new WebApplicationException(Response.Status.SERVICE_UNAVAILABLE);
+        if (name != null)
+            return playoffs.findByLoserNameLike(name)
+                    .stream()
+                    .map(g -> g.loser().name())
+                    .collect(Collectors.toSet());
+        return playoffs.listPlayoffsWithWinnerAndLoser()
+                .stream()
+                .map(g -> g.loser().name())
+                .collect(Collectors.toSet());
     }
 
+    @GET
+    @Path("/ranking")
+    @WithSpan
+    public Ranking getRanking(){
+        return Ranking.winnerRanking(playoffs);
+    }
 }
