@@ -1,0 +1,32 @@
+###
+GET http://localhost:8080/jnopo-talk/api/playoffs/tied
+
+###
+GET http://localhost:8080/jnopo-talk/api/playoffs/winners
+
+### requires implementation
+GET http://localhost:8080/jnopo-talk/api/playoffs/losers
+
+### requires implementation
+GET http://localhost:8080/jnopo-talk/api/playoffs/losers?name=M
+
+###
+GET http://localhost:8080/jnopo-talk/api/playoffs/ranking
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
