@@ -15,10 +15,13 @@ This application requires some NoSQL databases (they're described at `docker-com
 docker-compose up -d
 ```
 
-This `docker-compose.yml` is starting up two containers:
+This `docker-compose.yml` is starting up three containers:
 - a MongoDB - take a look at the `docker-compose.yml` file to realize what the localhost port it will be used. Default is: 27017;
+
 - a Mongo Express - A web browser application to navigate on the database. Take a look at the `docker-compose.yml` file to realize what the localhost port it will be used.
   Default is: 8081;
+
+- a Couchbase- take a look at the `docker-compose.yml` file to realize what the localhost port it will be used. To access the web management system, access the `8091`. It's needed to be configured, take a look at the instructions at **Configuring the Couchbase cluster** section below;
 
 ### Accessing the MongoDB Shell from the MongoDB instance
 
@@ -27,6 +30,25 @@ If you want to execute mongo commands against the Mongodb, access the shell cons
 ```shell
 docker exec -it jnopo-talk_mongo_1 mongosh -u root -p example
 ```
+
+### Configuring the Couchbase cluster
+
+1. With the Couchbase container started, go to: http://localhost:8091/ui/index.html
+2. Select the "Configure New Cluster" option 
+3. Defines a name for the cluster name 
+4. Set `root` to "Administrator" username 
+5. Set `123456` as "Password"
+6. Check “I accept the terms and conditions” and click the “Finish With Defaults” button 
+7. Go to the "Buckets" section 
+8. Create a `jnopo` Bucket by clicking on the "Add Bucket" option 
+9. Click on "Scopes & Collections" and then click on "Add Collection"
+10. Enter `GameMatch` as the collection name and click the "Save" button to complete your creation 
+11. Now, in the "Query" session, run this command [N1QL](https://www.couchbase.com/products/n1ql/) to create the primary index for the `GameMatch` collection:
+
+```n1ql
+CREATE PRIMARY INDEX primaryGameMatch ON jnopo._default.GameMatch
+```
+
 
 ### Execute the project in DEV mode
 
@@ -38,29 +60,79 @@ SE 17**)
 **Note, the [Maven
 Wrapper](https://maven.apache.org/wrapper/) is already included in the project, so a Maven install is not actually needed. You may first need to execute `chmod +x mvnw`.**
 
+### Run it on OpenLiberty
+
+First of all, package the application using the `open-liberty` profile:
+
 ```
-./mvnw clean package wildfly:run
+./mvnw package -Popen-liberty
+```
+And then execute the OpenLiberty Maven Plugin:
+
+```
+./mvnw -Popen-liberty liberty:run
+```
+If you prefer to run the UI with redeployment support, please execute the following from this directory:
+
+```
+./mvnw -Pwildfly liberty:dev
+```
+
+Once the server is running, the source directories are monitored for changes. If required the sources will be compiled and the deployment may be redeployed.
+
+Once the runtime starts, you can access the project at http://localhost:9080/jnopo-talk.
+
+Running it on OpenLiberty, you can access the Swagger-UI to navigate through the exposed Rest API: http://localhost:9080/openapi/ui/
+
+
+### Run it on Wildfly
+
+First of all, package the application using the `wildfly` profile:
+
+```
+./mvnw package -Pwildfly
+```
+
+And then execute the Wildfly Maven Plugin:
+
+```
+./mvnw -Pwildfly wildfly:run
 ```
 
 If you prefer to run the UI with redeployment support, please execute the following from this directory:
 
 ```
-./mvnw wildfly:dev
+./mvnw -Pwildfly wildfly:dev
 ```
-
 
 Once the server is running, the source directories are monitored for changes. If required the sources will be compiled and the deployment may be redeployed.
 
 Once the runtime starts, you can access the project at http://localhost:8080/jnopo-talk.
 
-
 ### Build it as Docker Image
 
 You can also run the project via Docker. To build the Docker image, execute the following commands from the directory where this file resides. Please ensure you have installed a [Java SE 8+ implementation](https://adoptium.net/?variant=openjdk8) appropriate for your Jakarta EE version/runtime choice and [Docker](https://docs.docker.com/get-docker/) (we have tested with Java SE 8, Java SE 11 and Java SE 17). Note, the [Maven Wrapper](https://maven.apache.org/wrapper/) is already included in the project, so a Maven install is not actually needed. You may first need to execute `chmod +x mvnw`.
 
+#### Build with OpenLiberty
+
 ```
-./mvnw clean package
-docker build -t jnopo-talk:v1 .
+./mvnw clean package -Popen-liberty
+docker build -f openliberty.Dockerfile -t jnopo-talk:v1 .
+```
+
+You can then run the Docker image by executing:
+
+```
+docker run -it --rm -p 9080:9080 jnopo-talk:v1
+```
+
+Once the runtime starts, you can access the project at http://localhost:9080/jnopo-talk.
+
+#### Build with Wildfly
+
+```
+./mvnw clean package -Pwildfly
+docker build -f wildfly.Dockerfile -t jnopo-talk:v1 .
 ```
 
 You can then run the Docker image by executing:
@@ -71,9 +143,29 @@ docker run -it --rm -p 8080:8080 jnopo-talk:v1
 
 Once the runtime starts, you can access the project at http://localhost:8080/jnopo-talk.
 
-## Performing the results after the period of the game matches
 
-On the terminal, connect to the MongoDB instance that the project is attached to and, inside of the target database (by default is `jnopo`) perform the following command:
+## Additional info
+
+### Switching between MongoDB and Couchbase
+
+On the MicroProfile configuration file, `microprofile-config.properties`, you can control which database will be used during the application execution.
+
+The key property that defines which database will be used in the application is the `jnosql.document.provider`. 
+
+For MongoDB, use:
+
+```properties
+jnosql.document.provider=org.eclipse.jnosql.databases.mongodb.communication.MongoDBDocumentConfiguration
+```
+For Couchbase, use:
+
+```properties
+jnosql.document.provider=org.eclipse.jnosql.databases.couchbase.communication.CouchbaseDocumentConfiguration
+```
+
+### Performing the results after the period of the game matches direct to MongoDB console
+
+If you have used MongoDB as storage then you can on the terminal, connect to the MongoDB instance that the project is attached to and, inside of the target database (by default is `jnopo`) perform the following command:
 
 ```console
 use jnopo
