@@ -6,7 +6,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public record Ranking(Map<String, Integer> players) {
+public record Ranking(Map<String, Integer> data) {
     @WithSpan
     public static Ranking winnerRanking(Playoffs playoffs) {
         return of(playoffs, g -> g.winner().name());
