@@ -21,8 +21,8 @@ public class GameEventProcessor {
                 game.gameId(),
                 new PlayerInfo(game.playerA().name(),game.playerAMovement()),
                 new PlayerInfo(game.playerB().name(),game.playerBMovement()),
-                game.winnerInfo().map(g->new PlayerInfo(g.player().name(),g.movement())).orElse(null),
-                game.loserInfo().map(g->new PlayerInfo(g.player().name(),g.movement())).orElse(null),
+                game.winnerInfo().map(g->new PlayerInfo(g.player().name(),g.movement())).orElse(PlayerInfo.NOBODY),
+                game.loserInfo().map(g->new PlayerInfo(g.player().name(),g.movement())).orElse(PlayerInfo.NOBODY),
                 game.isTied()
         );
         playoffs.save(gameMatch);

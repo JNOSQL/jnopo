@@ -9,6 +9,12 @@ public record PlayerInfo(
         @Column
         String name,
         @Column
-        Movement movement
+        String movement
 ) {
+
+        public static final PlayerInfo NOBODY = new PlayerInfo("","");
+
+        public PlayerInfo(String name, Movement movement){
+                this(name, movement.name());
+        }
 }
