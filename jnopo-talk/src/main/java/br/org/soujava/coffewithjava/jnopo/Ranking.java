@@ -14,7 +14,7 @@ public record Ranking(Map<String, Integer> data) {
 
     private static Ranking of(Playoffs playoffs, Function<GameMatch, String> groupingFunction) {
         var data =
-                playoffs.listPlayoffsWithWinnerAndLoser()
+                playoffs.listNonTiedGameMatches()
                         .stream()
                         .collect(
                                 Collectors.groupingBy(
