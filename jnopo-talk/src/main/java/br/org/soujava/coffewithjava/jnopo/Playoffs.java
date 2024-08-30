@@ -13,7 +13,7 @@ public interface Playoffs extends DataRepository<GameMatch,String> {
     @Save
     GameMatch save(GameMatch gameMatch);
 
-    @Query("select * from GameMatch where tied=false")
+    @Query("from GameMatch where tied=false")
     List<GameMatch> listNonTiedGameMatches();
 
     default Ranking  winnerRanking(){
