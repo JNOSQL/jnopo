@@ -68,8 +68,8 @@ WebSocket communication channel starter code
     ```bash 
     oc login --token=<YOUR TOKEN> --server=https://<OPENSHIFT URL WITH PORT>
     ```
-- Execute the maven command using the `openshift` profile:
+- Execute the maven command:
 
     ```bash
-    ./mvnw install -Popenshift
+    ./mvnw install -Dquarkus.kubernetes.deploy=true -DskipTests
     ```
