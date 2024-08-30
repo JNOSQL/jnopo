@@ -20,27 +20,25 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.report.sourceEncoding>UTF-8</project.report.sourceEncoding>
-        <maven.compiler.release>17</maven.compiler.release>
-        <jakartaee-api.version>10.0.0</jakartaee-api.version>
-        <wildfly.version>27.0.1.Final</wildfly.version>
+        <maven.compiler.release>21</maven.compiler.release>
+        <jakartaee-api.version>11.0.0-M4</jakartaee-api.version>
         <compiler-plugin.version>3.10.1</compiler-plugin.version>
         <war-plugin.version>3.3.2</war-plugin.version>
-        <wildfly-plugin.version>4.2.1.Final</wildfly-plugin.version>
-        <jnosql.version>1.1.0</jnosql.version>
+        <jnosql.version>1.1.2-SNAPSHOT</jnosql.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>br.org.soujava.coffewithjava</groupId>
+            <artifactId>jnopo-core</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
             <version>${jakartaee-api.version}</version>
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>br.org.soujava.coffewithjava</groupId>
-            <artifactId>jnopo-core</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -54,12 +52,6 @@
         <dependency>
             <groupId>org.eclipse.jnosql.databases</groupId>
             <artifactId>jnosql-mongodb</artifactId>
-            <version>${jnosql.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.eclipse.jnosql.databases</groupId>
-            <artifactId>jnosql-couchbase</artifactId>
             <version>${jnosql.version}</version>
         </dependency>
 
@@ -96,30 +88,6 @@
 
     <profiles>
         <profile>
-            <id>wildfly</id>
-            <properties>
-                <microprofile.version>5.0</microprofile.version>
-            </properties>
-<!--            <activation>-->
-<!--                <activeByDefault>true</activeByDefault>-->
-<!--            </activation>-->
-            <build>
-                <plugins>
-                    <!-- Execute 'mvn clean package wildfly:run' to run the application. -->
-                    <plugin>
-                        <groupId>org.wildfly.plugins</groupId>
-                        <artifactId>wildfly-maven-plugin</artifactId>
-                        <version>${wildfly-plugin.version}</version>
-                        <configuration>
-                            <version>${wildfly.version}</version>
-                            <server-config>standalone-full.xml</server-config>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <profile>
             <id>open-liberty</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
@@ -132,7 +100,7 @@
                     <plugin>
                         <groupId>io.openliberty.tools</groupId>
                         <artifactId>liberty-maven-plugin</artifactId>
-                        <version>3.10</version>
+                        <version>3.10.3</version>
                         <configuration>
                             <copyDependencies>
                                 <dependencyGroup>
