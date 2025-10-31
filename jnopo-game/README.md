@@ -1,75 +1,159 @@
-# coffewithjava-jokenpo
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+# JNOPO Game
 
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+> Multiplayer Jokenpo (Rock-Paper-Scissors) game powered by Quarkus.
 
-## Running the application in dev mode
+---
 
-You can run your application in dev mode that enables live coding using:
-```shell script
+## Overview
+
+JNOPO Game is a cloud-ready, real-time implementation of the classic Jokenpo game, built with [Quarkus](https://quarkus.io/). It features WebSocket-based multiplayer gameplay, modern Java 21 features, and seamless deployment to cloud platforms like OpenShift.
+
+> [!TIP]
+> This module is designed to be the backend for interactive game clients and can be deployed as a container or native binary.
+
+---
+
+## Features
+
+- **Live multiplayer gameplay** via WebSockets
+- **RESTful API** for game management
+- **JSON-B** for data serialization
+- **Hot reload** in dev mode
+- **Native executable** support (GraalVM)
+- **Cloud deployment** with Kubernetes/Openshift manifests
+- **Dockerfiles** for JVM, native, and micro builds
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Java 21+
+- Maven 3.8+
+- (Optional) Docker, GraalVM, OpenShift CLI (`oc`)
+
+### Run in Development Mode
+
+```bash
 ./mvnw compile quarkus:dev
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
+- Access the Quarkus Dev UI at [http://localhost:8080/q/dev](http://localhost:8080/q/dev)
 
-## Packaging and running the application
+### Build & Run
 
-The application can be packaged using:
-```shell script
+```bash
+# Build JVM jar
 ./mvnw package
+
+# Run the app
+java -jar target/quarkus-app/quarkus-run.jar
 ```
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+#### Build an Über-jar
 
-If you want to build an _über-jar_, execute the following command:
-```shell script
+```bash
 ./mvnw package -Dquarkus.package.type=uber-jar
+java -jar target/*-runner.jar
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+#### Build Native Executable
 
-## Creating a native executable
-
-You can create a native executable using: 
-```shell script
+```bash
 ./mvnw package -Pnative
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using: 
-```shell script
+# Or, using container build:
 ./mvnw package -Pnative -Dquarkus.native.container-build=true
+./target/coffewithjava-jokenpo-1.0.0-SNAPSHOT-runner
 ```
 
-You can then execute your native executable with: `./target/coffewithjava-jokenpo-1.0.0-SNAPSHOT-runner`
+---
 
-If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.
+## Cloud & Container Deployment
 
-## Related Guides
+### Docker
 
-- JSON-B ([guide](https://quarkus.io/guides/rest-json)): JSON Binding support
-- WebSockets ([guide](https://quarkus.io/guides/websockets)): WebSocket communication channel support
+Dockerfiles for JVM, native, and micro builds are provided in `src/main/docker/`.
 
-## Provided Code
+### Kubernetes / OpenShift
 
-### WebSockets
+- Kubernetes manifests: `src/main/k8s/`
+- Deploy to OpenShift Developer Sandbox:
 
-WebSocket communication channel starter code
+---
 
-[Related guide section...](https://quarkus.io/guides/websockets)
+### Deploy on OpenShift Developer Sandbox (Free)
 
-## Deploy on Openshift Developer Sandbox for free
+> [!TIP]
+> You can deploy this app for free using the OpenShift Developer Sandbox.
 
-- create a  Openshift Developer Sandbox for free here: https://developers.redhat.com/developer-sandbox ;
-- install the `oc` - OpenShift Command Line Interface (CLI);
-- get your token and setting up your local machine with a similar command:
-    ```bash 
-    oc login --token=<YOUR TOKEN> --server=https://<OPENSHIFT URL WITH PORT>
-    ```
-- Execute the maven command:
+**Steps:**
 
-    ```bash
-    ./mvnw install -Dquarkus.kubernetes.deploy=true -DskipTests
-    ```
+1. **Create a free account:**
+	- Sign up at [OpenShift Developer Sandbox](https://developers.redhat.com/developer-sandbox)
+
+2. **Install the OpenShift CLI (`oc`):**
+	- Download and install from [OpenShift CLI Downloads](https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/)
+
+3. **Log in to your OpenShift Sandbox:**
+	```bash
+	oc login --token=<YOUR TOKEN> --server=https://<OPENSHIFT URL WITH PORT>
+	```
+
+4. **Deploy the application:**
+	```bash
+	./mvnw install -Dquarkus.kubernetes.deploy=true -DskipTests
+	```
+
+---
+
+## API & WebSocket Guides
+
+- [JSON-B](https://quarkus.io/guides/rest-json): JSON Binding support
+- [WebSockets](https://quarkus.io/guides/websockets): Real-time communication
+
+---
+
+## Project Structure
+
+```
+jnopo-game/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   ├── docker/
+│   │   ├── k8s/
+│   │   └── resources/
+│   └── test/
+├── pom.xml
+├── README.md
+```
+
+---
+
+## Admonitions
+
+> [!IMPORTANT]
+> This module is stateless and does not persist game data. Integrate with a database or cache for persistent sessions.
+
+> [!NOTE]
+> For core game logic, see the `jnopo-core` module.
+
+---
+
+## Community & Support
+
+- [JNOSQL Organization](https://github.com/jnosql)
+- Issues and feature requests: Use the GitHub Issues tab
+
+---
+
+## Quick Links
+
+- [Quarkus Documentation](https://quarkus.io/guides/)
+- [JNOSQL Main Repository](https://github.com/jnosql/jnopo)
+
+---
+
+_Ready to play? Deploy and challenge your friends!_
