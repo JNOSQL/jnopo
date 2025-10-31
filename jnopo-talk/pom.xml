@@ -6,10 +6,9 @@
     <parent>
         <groupId>br.org.soujava.coffewithjava</groupId>
         <artifactId>jnopo</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>2.0.0</version>
     </parent>
     <artifactId>jnopo-talk</artifactId>
-    <version>0.1-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>jnopo-talk</name>
@@ -52,6 +51,12 @@
         <dependency>
             <groupId>org.eclipse.jnosql.databases</groupId>
             <artifactId>jnosql-mongodb</artifactId>
+            <version>${jnosql.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jnosql.databases</groupId>
+            <artifactId>jnosql-couchbase</artifactId>
             <version>${jnosql.version}</version>
         </dependency>
 
@@ -143,8 +148,8 @@
             </snapshots>
         </repository>
         <repository>
-            <id>oss.sonatype.org-snapshot</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <id>central.sonatype.com-snapshot</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
