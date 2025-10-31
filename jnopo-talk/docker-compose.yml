@@ -20,13 +20,13 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
 
 
-#  couchbase-db:
-#    image: couchbase
-#    container_name: couchbase-db
-#    ports:
-#      - "8091-8097:8091-8097"
-#      - "9123:9123"
-#      - "11207:11207"
-#      - "11210:11210"
-#      - "11280:11280"
-#      - "18091-18097:18091-18097"
+  couchbase-db:
+    image: couchbase
+    container_name: couchbase-db
+    ports:
+      - "8091-8097:8091-8097"
+      - "9123:9123"
+      - "11207:11207"
+      - "11210:11210"
+      - "11280:11280"
+      - "18091-18097:18091-18097"
