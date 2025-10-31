@@ -23,14 +23,14 @@
         <jakartaee-api.version>11.0.0-M4</jakartaee-api.version>
         <compiler-plugin.version>3.10.1</compiler-plugin.version>
         <war-plugin.version>3.3.2</war-plugin.version>
-        <jnosql.version>1.1.2-SNAPSHOT</jnosql.version>
+        <jnosql.version>1.1.10</jnosql.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>br.org.soujava.coffewithjava</groupId>
             <artifactId>jnopo-core</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -98,36 +98,14 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <microprofile.version>6.0</microprofile.version>
+                <microprofile.version>7.0</microprofile.version>
             </properties>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>io.openliberty.tools</groupId>
                         <artifactId>liberty-maven-plugin</artifactId>
-                        <version>3.10.3</version>
-                        <configuration>
-                            <copyDependencies>
-                                <dependencyGroup>
-                                    <location>jdbc</location>
-                                    <dependency>
-                                        <groupId>org.apache.derby</groupId>
-                                        <artifactId>derby</artifactId>
-                                        <version>10.16.1.1</version>
-                                    </dependency>
-                                    <dependency>
-                                        <groupId>org.apache.derby</groupId>
-                                        <artifactId>derbyshared</artifactId>
-                                        <version>10.16.1.1</version>
-                                    </dependency>
-                                    <dependency>
-                                        <groupId>org.apache.derby</groupId>
-                                        <artifactId>derbytools</artifactId>
-                                        <version>10.16.1.1</version>
-                                    </dependency>
-                                </dependencyGroup>
-                            </copyDependencies>
-                        </configuration>
+                        <version>3.11.5</version>
                     </plugin>
                 </plugins>
             </build>
