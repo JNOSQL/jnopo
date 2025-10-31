@@ -67,16 +67,14 @@ class GameTest {
             var state = game.getGameState(null);
             softly.assertThat(state)
                     .as("should return a non-null GameState instance ever")
-                    .isNotNull();
-            softly.assertThat(state)
+                    .isNotNull()
                     .as("should return a " + GameInvalid.class.getSimpleName() + " instance when the provided gameId is null")
                     .isInstanceOf(GameInvalid.class);
 
             state = game.getGameState(UUID.randomUUID().toString());
             softly.assertThat(state)
                     .as("should return a non-null GameState instance ever")
-                    .isNotNull();
-            softly.assertThat(state)
+                    .isNotNull()
                     .as("should return a " + GameInvalid.class.getSimpleName() + " instance when the provided gameId is not valid")
                     .isInstanceOf(GameInvalid.class);
         });
@@ -88,8 +86,7 @@ class GameTest {
             var state = game.getGameState(state2.gameId());
             softly.assertThat(state)
                     .as("should return a non-null GameState instance ever")
-                    .isNotNull();
-            softly.assertThat(state)
+                    .isNotNull()
                     .as("returned game state should be equals to the same returned from the latest newGame(player) call")
                     .isEqualTo(state2);
         });
@@ -100,8 +97,7 @@ class GameTest {
             var state = game.getGameState(state3.gameId());
             softly.assertThat(state)
                     .as("should return a non-null GameState instance ever")
-                    .isNotNull();
-            softly.assertThat(state)
+                    .isNotNull()
                     .as("returned game state should be equals to the same returned from the latest newGame(player) call")
                     .isEqualTo(state3);
         });
@@ -130,8 +126,7 @@ class GameTest {
         assertSoftly(softly -> {
             softly.assertThat(gameReady)
                     .as("should return a non-null GameState instance ever")
-                    .isNotNull();
-            softly.assertThat(gameReady)
+                    .isNotNull()
                     .as("should return a " + GameReady.class.getSimpleName() + " instance")
                     .isInstanceOf(GameReady.class);
         });
@@ -142,8 +137,7 @@ class GameTest {
         assertSoftly(softly -> {
             softly.assertThat(gameAbandoned)
                     .as("should return a non-null GameState instance ever")
-                    .isNotNull();
-            softly.assertThat(gameAbandoned)
+                    .isNotNull()
                     .as("should return a " + GameAbandoned.class.getSimpleName() + " instance")
                     .isInstanceOf(GameAbandoned.class);
         });
@@ -154,8 +148,7 @@ class GameTest {
         assertSoftly(softly -> {
             softly.assertThat(invalidGame)
                     .as("should return a non-null GameState instance ever")
-                    .isNotNull();
-            softly.assertThat(invalidGame)
+                    .isNotNull()
                     .as("should return a " + GameInvalid.class.getSimpleName() + " instance when the informed player is not playing any game")
                     .isInstanceOf(GameInvalid.class);
         });
@@ -166,8 +159,7 @@ class GameTest {
         assertSoftly(softly -> {
             softly.assertThat(invalidGame2)
                     .as("should return a non-null GameState instance ever")
-                    .isNotNull();
-            softly.assertThat(invalidGame2)
+                    .isNotNull()
                     .as("should return a " + GameInvalid.class.getSimpleName() + " instance when a null reference is passed as player")
                     .isInstanceOf(GameInvalid.class);
         });
@@ -177,8 +169,7 @@ class GameTest {
         assertSoftly(softly -> {
             softly.assertThat(invalidGame3)
                     .as("should return a non-null GameState instance ever")
-                    .isNotNull();
-            softly.assertThat(invalidGame3)
+                    .isNotNull()
                     .as("should return a " + GameInvalid.class.getSimpleName() + " instance")
                     .isInstanceOf(GameInvalid.class);
         });
@@ -217,9 +208,7 @@ class GameTest {
 
             softly.assertThat(waitingPlayers)
                     .as("waiting room should be not empty")
-                    .isNotEmpty();
-
-            softly.assertThat(waitingPlayers)
+                    .isNotEmpty()
                     .as("player1 should be in waiting room")
                     .hasSameElementsAs(List.of(player1));
 
@@ -255,8 +244,7 @@ class GameTest {
         assertSoftly(softly -> {
             softly.assertThat(gameState)
                     .as("whenever newGame(Player) is called then a non null game state should return")
-                    .isNotNull();
-            softly.assertThat(gameState)
+                    .isNotNull()
                     .as("when it's missing the required players then game's state should be waiting the player")
                     .isInstanceOf(WaitingPlayers.class);
         });
@@ -268,8 +256,7 @@ class GameTest {
         assertSoftly(softly -> {
             softly.assertThat(players1)
                     .as("whenever playesOf(gameId) is called then a non null result should return")
-                    .isNotNull();
-            softly.assertThat(players1)
+                    .isNotNull()
                     .as("players is correct")
                     .hasSameElementsAs(Set.of(player1));
         });
@@ -300,8 +287,7 @@ class GameTest {
         assertSoftly(softly -> {
             softly.assertThat(players2)
                     .as("whenever playesOf(gameId) is called then a non null result should return")
-                    .isNotNull();
-            softly.assertThat(players2)
+                    .isNotNull()
                     .as("players is correct")
                     .hasSameElementsAs(Set.of(player1, player2));
         });
@@ -348,8 +334,7 @@ class GameTest {
         assertSoftly(softly -> {
             softly.assertThat(players3)
                     .as("whenever playesOf(gameId) is called then a non null result should return")
-                    .isNotNull();
-            softly.assertThat(players3)
+                    .isNotNull()
                     .as("players is correct")
                     .isEmpty();
         });

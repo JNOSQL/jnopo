@@ -4,10 +4,10 @@ import java.util.Objects;
 import java.util.Optional;
 
 public record GameOver(String gameId,
-                       Player playerA,
-                       Player playerB,
-                       Movement playerAMovement,
-                       Movement playerBMovement) implements GameState {
+        Player playerA,
+        Player playerB,
+        Movement playerAMovement,
+        Movement playerBMovement) implements GameState {
 
     public GameOver {
         Objects.requireNonNull(gameId, "game id is required");
@@ -25,59 +25,36 @@ public record GameOver(String gameId,
         if (isTied()) {
             return Optional.empty();
         }
-
-        return Optional
-                .of(playerAMovement.beats(playerBMovement))
-                .filter(Boolean.TRUE::equals)
-                .flatMap((v) -> Optional.of(playerA))
-                .or(() -> Optional.of(playerB));
+        return playerAMovement.beats(playerBMovement) ? Optional.of(playerA) : Optional.of(playerB);
     }
 
     public Optional<Player> loser() {
         if (isTied()) {
             return Optional.empty();
         }
-        return Optional
-                .of(playerAMovement.beats(playerBMovement))
-                .filter(Boolean.TRUE::equals)
-                .flatMap((v) -> Optional.of(playerB))
-                .or(() -> Optional.of(playerA));
+        return playerAMovement.beats(playerBMovement) ? Optional.of(playerB) : Optional.of(playerA);
     }
 
     public Optional<Movement> winnerMovement() {
         if (isTied()) {
             return Optional.empty();
         }
-        return Optional
-                .of(playerAMovement.beats(playerBMovement))
-                .filter(Boolean.TRUE::equals)
-                .flatMap((v) -> Optional.of(playerAMovement))
-                .or(() -> Optional.of(playerBMovement));
+        return playerAMovement.beats(playerBMovement) ? Optional.of(playerAMovement) : Optional.of(playerBMovement);
     }
 
     public Optional<Movement> loserMovement() {
         if (isTied()) {
             return Optional.empty();
         }
-        return Optional
-                .of(playerAMovement.beats(playerBMovement))
-                .filter(Boolean.TRUE::equals)
-                .flatMap((v) -> Optional.of(playerBMovement))
-                .or(() -> Optional.of(playerAMovement));
+        return playerAMovement.beats(playerBMovement) ? Optional.of(playerBMovement) : Optional.of(playerAMovement);
     }
 
     public Optional<GameOverLoserInfo> loserInfo() {
-        if (isTied()) {
-            return Optional.empty();
-        }
-        return Optional.of(new GameOverLoserInfo(this.gameId, this.loser().orElse(null), this.loserMovement().orElse(null)));
+        return loser().map(player -> new GameOverLoserInfo(this.gameId, player, loserMovement().orElseThrow()));
     }
 
     public Optional<GameOverWinnerInfo> winnerInfo() {
-        if (isTied()) {
-            return Optional.empty();
-        }
-        return Optional.of(new GameOverWinnerInfo(this.gameId, this.winner().orElse(null), this.winnerMovement().orElse(null)));
+        return winner().map(player -> new GameOverWinnerInfo(this.gameId, player, winnerMovement().orElseThrow()));
     }
 
     public GameOverPlayerInfo playerAInfo() {

@@ -16,7 +16,6 @@ import java.util.stream.Stream;
 import static java.util.Objects.isNull;
 import static java.util.Objects.requireNonNull;
 
-
 public class Game {
 
     private final Queue<Player> waitingRoom = new LinkedList<>();
@@ -41,20 +40,15 @@ public class Game {
         }
     }
 
-
     public GameState playGame(String gameId, Player player, Movement movement) {
         requireNonNull(gameId, "gameId is required");
         requireNonNull(player, "player is required");
         requireNonNull(movement, "movement is required");
         synchronized (this) {
-            var newState = games.computeIfPresent(gameId, (key, oldState) -> {
-                if (oldState instanceof GameReady gameReady) {
-                    return play(gameReady, player, movement);
-                }
-                if (oldState instanceof GameRunning gameRunning) {
-                    return play(gameRunning, player, movement);
-                }
-                return oldState;
+            var newState = games.computeIfPresent(gameId, (key, oldState) -> switch (oldState) {
+                case GameReady gameReady -> play(gameReady, player, movement);
+                case GameRunning gameRunning -> play(gameRunning, player, movement);
+                default -> oldState;
             });
             if (newState instanceof GameOver) {
                 playersByGame.remove(gameId)
@@ -100,7 +94,6 @@ public class Game {
                 isPlayerB ? movement : gameRunning.playerBMovement());
     }
 
-
     public Set<Player> playersByGame(String gameId) {
         synchronized (this) {
             return Collections.unmodifiableSet(playersByGame.getOrDefault(gameId, Set.of()));
@@ -133,7 +126,8 @@ public class Game {
                 gamesByPlayer.remove(opponent);
                 games.remove(gameId);
             }
-            return new GameAbandoned(gameId, Stream.of(player, opponent).filter(Objects::nonNull).collect(Collectors.toUnmodifiableSet()));
+            return new GameAbandoned(gameId,
+                    Stream.of(player, opponent).filter(Objects::nonNull).collect(Collectors.toUnmodifiableSet()));
         }
     }
 
