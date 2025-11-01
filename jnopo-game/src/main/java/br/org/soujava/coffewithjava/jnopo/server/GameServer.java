@@ -1,5 +1,26 @@
 package br.org.soujava.coffewithjava.jnopo.server;
 
+import static br.org.soujava.coffewithjava.jnopo.server.Message.Field.gameId;
+import static br.org.soujava.coffewithjava.jnopo.server.Message.Field.messageSetter;
+import static br.org.soujava.coffewithjava.jnopo.server.Message.Field.opponentMovement;
+import static br.org.soujava.coffewithjava.jnopo.server.Message.Field.opponentName;
+import static br.org.soujava.coffewithjava.jnopo.server.Message.Type.CONNECTED;
+import static br.org.soujava.coffewithjava.jnopo.server.Message.Type.GAME_INVALID;
+import static br.org.soujava.coffewithjava.jnopo.server.Message.Type.GAME_OVER_DRAW;
+import static br.org.soujava.coffewithjava.jnopo.server.Message.Type.GAME_OVER_YOU_LOSE;
+import static br.org.soujava.coffewithjava.jnopo.server.Message.Type.GAME_OVER_YOU_WIN;
+import static br.org.soujava.coffewithjava.jnopo.server.Message.Type.GAME_READY;
+import static br.org.soujava.coffewithjava.jnopo.server.Message.Type.GAME_RUNNING;
+import static br.org.soujava.coffewithjava.jnopo.server.Message.Type.WAITING_PLAYERS;
+import static java.util.Objects.isNull;
+
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
+import java.util.function.Supplier;
+
+import org.jboss.logging.Logger;
+
 import br.org.soujava.coffewithjava.jnopo.core.Game;
 import br.org.soujava.coffewithjava.jnopo.core.GameAbandoned;
 import br.org.soujava.coffewithjava.jnopo.core.GameInvalid;
@@ -23,27 +44,6 @@ import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
-import org.jboss.logging.Logger;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
-import java.util.function.Supplier;
-
-import static br.org.soujava.coffewithjava.jnopo.server.Message.Field.gameId;
-import static br.org.soujava.coffewithjava.jnopo.server.Message.Field.messageSetter;
-import static br.org.soujava.coffewithjava.jnopo.server.Message.Field.opponentMovement;
-import static br.org.soujava.coffewithjava.jnopo.server.Message.Field.opponentName;
-import static br.org.soujava.coffewithjava.jnopo.server.Message.Type.CONNECTED;
-import static br.org.soujava.coffewithjava.jnopo.server.Message.Type.GAME_INVALID;
-import static br.org.soujava.coffewithjava.jnopo.server.Message.Type.GAME_OVER_DRAW;
-import static br.org.soujava.coffewithjava.jnopo.server.Message.Type.GAME_OVER_YOU_LOSE;
-import static br.org.soujava.coffewithjava.jnopo.server.Message.Type.GAME_OVER_YOU_WIN;
-import static br.org.soujava.coffewithjava.jnopo.server.Message.Type.GAME_READY;
-import static br.org.soujava.coffewithjava.jnopo.server.Message.Type.GAME_RUNNING;
-import static br.org.soujava.coffewithjava.jnopo.server.Message.Type.WAITING_PLAYERS;
-import static java.util.Objects.isNull;
 
 @ServerEndpoint("/jnopo/{playerName}")
 @ApplicationScoped
