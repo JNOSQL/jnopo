@@ -84,6 +84,11 @@ Once the runtime starts, you can access the project at http://localhost:9080/jno
 
 Running it on OpenLiberty, you can access the Swagger-UI to navigate through the exposed Rest API: http://localhost:9080/openapi/ui/
 
+To see the logs, you could run the command below:
+
+```sh
+tail -f target/liberty/wlp/usr/servers/defaultServer/logs/messages.log
+```
 
 ### Run it on Wildfly
 
