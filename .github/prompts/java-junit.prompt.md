@@ -13,6 +13,8 @@ Your goal is to help me write effective unit tests with JUnit 5, covering both s
 - Use a standard Maven or Gradle project structure.
 - Place test source code in `src/test/java`.
 - Include dependencies for `junit-jupiter-api`, `junit-jupiter-engine`, and `junit-jupiter-params` for parameterized tests.
+- Include dependencies for assertions: `assertj`
+- Include dependencies for mocking: `mockito` 
 - Use build tool commands to run tests: `mvn test` or `gradle test`.
 
 ## Test Structure
