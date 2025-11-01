@@ -21,10 +21,10 @@ tools: ['run_in_terminal', 'get_terminal_output']
 5. After generating your commit message, Copilot will automatically run the following command in your integrated terminal (no confirmation needed):
 
 ```bash
-git commit -m "type(scope): description"
+git commit -s -m "type(scope): description"
 ```
 
-6. Just execute this prompt and Copilot will handle the commit for you in the terminal.
+6. Just execute this prompt and Copilot will handle the commit for you in the terminal with sign-off.
 
 ### Commit Message Structure
 
@@ -67,7 +67,7 @@ git commit -m "type(scope): description"
 
 ```xml
 <final-step>
-	<cmd>git commit -m "type(scope): description"</cmd>
-	<note>Replace with your constructed message. Include body and footer if needed.</note>
+	<cmd>git commit -s -m "type(scope): description"</cmd>
+	<note>Replace with your constructed message. Include body and footer if needed. The -s flag adds a Signed-off-by line.</note>
 </final-step>
 ```
